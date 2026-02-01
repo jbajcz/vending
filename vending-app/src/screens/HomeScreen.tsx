@@ -1,16 +1,17 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput, Image } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TextInput, Image, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { COLORS, SPACING, SHADOWS, RADIUS } from '../constants/theme';
+import { useNavigation } from '@react-navigation/native';
+import { COLORS, SPACING, RADIUS } from '../constants/theme';
 import { runQuery } from '../services/db';
 import { Item, User } from '../types';
 import { Ionicons } from '@expo/vector-icons';
 import { ITEM_IMAGES, UI_ICONS } from '../constants/assets';
 
 export default function HomeScreen() {
-    const [user, setUser] = useState<User | null>(null);
-    const [recommendations, setRecommendations] = useState<Item[]>([]);
+    const navigation = useNavigation<any>();
     const [machines, setMachines] = useState<any[]>([]);
+    const [suggestions, setSuggestions] = useState<Item[]>([]);
 
     useEffect(() => {
         loadData();
@@ -18,171 +19,189 @@ export default function HomeScreen() {
 
     const loadData = async () => {
         try {
-            const userData = await runQuery('SELECT * FROM users WHERE user_id = 1');
-            if (userData && userData.length > 0) setUser(userData[0]);
+            // Machines
+            const machineData = await runQuery('SELECT * FROM vending_machines LIMIT 20');
+            setMachines(machineData.map((m, i) => ({ ...m, distance: `${(i + 1) * 0.5 + 2} mi` })));
 
-            const items = await runQuery('SELECT * FROM items LIMIT 5');
-            setRecommendations(items);
-
-            // Mock fetching machines with distance
-            const machineData = await runQuery('SELECT * FROM vending_machines LIMIT 5');
-            setMachines(machineData.map((m, i) => ({ ...m, distance: `${(i + 1) * 0.5} mi` })));
+            // Suggestions
+            const items = await runQuery('SELECT * FROM items LIMIT 20');
+            setSuggestions(items);
         } catch (e) {
-            console.error("Home Load Error", e);
+            console.error(e);
         }
     };
 
     return (
         <SafeAreaView style={styles.container}>
             <ScrollView contentContainerStyle={styles.content}>
-                {/* Header Text */}
-                <Text style={styles.welcomeText}>Welcome {user?.name || 'User'}!</Text>
+
+                {/* Header title */}
+                <Text style={styles.headerTitle}>Vendor</Text>
 
                 {/* Search Bar */}
-                <View style={styles.searchBar}>
-                    <Ionicons name="search" size={20} color={COLORS.subtext} style={{ marginRight: 8 }} />
-                    <Text style={styles.searchText}>Search</Text>
+                <View style={styles.searchContainer}>
+                    <Ionicons name="search" size={20} color="#666" style={styles.searchIcon} />
+                    <TextInput
+                        placeholder="Search item"
+                        placeholderTextColor="#666"
+                        style={styles.searchInput}
+                    />
                 </View>
 
-                {/* Categories Circles */}
+                {/* Categories Row */}
                 <View style={styles.categoriesRow}>
-                    {Object.entries(UI_ICONS.categories).map(([name, source], i) => (
-                        <View key={i} style={styles.categoryContainer}>
-                            <Image source={source} style={styles.categoryCircle} resizeMode="contain" />
-                            <Text style={styles.categoryText}>{name}</Text>
-                        </View>
-                    ))}
+                    <CategoryItem color={COLORS.iconGreen} label="Drinks" />
+                    <CategoryItem color={COLORS.iconOrange} label="Drinks" />
+                    <CategoryItem color={COLORS.iconWhite} label="Drinks" />
+                    <CategoryItem color={COLORS.iconBlue} label="Drinks" />
+                    <CategoryItem color={COLORS.iconOrange} label="Drinks" />
                 </View>
 
-                {/* Near You Section */}
-                <View style={styles.sectionHeader}>
-                    <Text style={styles.sectionTitle}>Vending Machines Near You</Text>
-                    <Ionicons name="chevron-forward" size={20} color="black" />
-                </View>
+                {/* Near You */}
+                <Text style={styles.sectionTitle}>Vending Machines Near You</Text>
                 <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.horizontalScroll}>
                     {machines.map((m) => (
                         <View key={m.machine_id} style={styles.machineCard}>
-                            <Image source={UI_ICONS.vendingMachine || null} style={styles.machineImage} resizeMode="contain" />
+                            <View style={styles.imagePlaceholder}>
+                                {/* White rounded box as placeholder for machine visual */}
+                                <Image source={UI_ICONS.vendingMachine || null} style={styles.machineImage} resizeMode="contain" />
+                            </View>
                             <View style={styles.metaRow}>
-                                <Text style={styles.cardTitle} numberOfLines={1}>{m.address || 'Machine'}</Text>
+                                <Text style={styles.cardTitle} numberOfLines={1}>{m.address}</Text>
                                 <Text style={styles.distanceText}>{m.distance}</Text>
                             </View>
                         </View>
                     ))}
                 </ScrollView>
 
-                {/* Suggestions Section */}
-                <Text style={styles.sectionTitle}>Suggestions</Text>
-                <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.horizontalScroll}>
-                    {recommendations.map((item) => (
-                        <View key={item.item_id} style={styles.itemCard}>
-                            <Image
-                                source={ITEM_IMAGES[item.name] || null}
-                                style={styles.itemImage}
-                                resizeMode="cover"
-                            />
+                {/* Suggestions Grid */}
+                <Text style={styles.sectionTitle}>Item Suggestions</Text>
+                <View style={styles.grid}>
+                    {suggestions.map((item) => (
+                        <TouchableOpacity
+                            key={item.item_id}
+                            style={styles.gridItem}
+                            onPress={() => navigation.navigate('Map', { searchItem: item.name })}
+                        >
+                            <View style={styles.imagePlaceholder}>
+                                <Image
+                                    source={ITEM_IMAGES[item.name]}
+                                    style={styles.itemImage}
+                                    resizeMode="contain"
+                                />
+                            </View>
                             <Text style={styles.cardTitle}>{item.name}</Text>
-                        </View>
+                        </TouchableOpacity>
                     ))}
-                </ScrollView>
+                </View>
 
             </ScrollView>
         </SafeAreaView>
     );
 }
 
+const CategoryItem = ({ color, label }: { color: string, label: string }) => (
+    <View style={styles.categoryParam}>
+        <Ionicons name="cafe" size={28} color={color} style={{ marginBottom: 4 }} />
+        <Text style={styles.categoryText}>{label}</Text>
+    </View>
+);
+
 const styles = StyleSheet.create({
-    container: { flex: 1, backgroundColor: COLORS.card },
+    container: { flex: 1, backgroundColor: COLORS.background },
     content: { padding: SPACING.m },
-    welcomeText: {
-        fontSize: 28,
-        fontWeight: '900',
-        color: 'black',
-        marginBottom: SPACING.m,
-    },
-    searchBar: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        backgroundColor: '#E0E0E0',
-        padding: SPACING.m,
-        borderRadius: RADIUS.l,
+
+    headerTitle: {
+        fontSize: 32,
+        fontWeight: 'bold',
+        color: COLORS.text,
+        textAlign: 'center',
         marginBottom: SPACING.l,
     },
-    searchText: {
+    searchContainer: {
+        backgroundColor: COLORS.inputBackground,
+        borderRadius: RADIUS.l,
+        flexDirection: 'row',
+        alignItems: 'center',
+        paddingHorizontal: SPACING.m,
+        height: 50,
+        marginBottom: SPACING.l,
+    },
+    searchIcon: { marginRight: 8 },
+    searchInput: {
+        flex: 1,
+        height: '100%',
+        color: '#000',
         fontSize: 16,
-        fontWeight: 'bold',
-        color: '#333',
     },
     categoriesRow: {
         flexDirection: 'row',
         justifyContent: 'space-between',
-        marginBottom: SPACING.l,
+        marginBottom: SPACING.xl,
+        paddingHorizontal: SPACING.s,
     },
-    categoryContainer: {
-        alignItems: 'center'
-    },
-    categoryCircle: {
-        width: 50,
-        height: 50,
-        borderRadius: 25,
-        backgroundColor: '#F0F0F0',
-        marginBottom: 4,
+    categoryParam: {
+        alignItems: 'center',
     },
     categoryText: {
-        fontSize: 10,
-        color: COLORS.subtext
-    },
-    sectionHeader: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        marginBottom: SPACING.s,
+        color: COLORS.text,
+        fontSize: 12,
     },
     sectionTitle: {
         fontSize: 18,
-        fontWeight: '800',
-        color: 'black',
-        marginRight: 4,
-        marginBottom: SPACING.s,
+        fontWeight: 'bold',
+        color: COLORS.text,
+        marginBottom: SPACING.m,
     },
     horizontalScroll: {
-        marginBottom: SPACING.l,
+        marginBottom: SPACING.xl,
     },
     machineCard: {
-        width: 120,
+        width: 140,
         marginRight: SPACING.m,
     },
-    itemCard: {
-        width: 120,
-        marginRight: SPACING.m,
+    imagePlaceholder: {
+        width: '100%',
+        aspectRatio: 1,
+        backgroundColor: '#FFFFFF',
+        borderRadius: RADIUS.s,
+        marginBottom: 8,
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: 8,
     },
     machineImage: {
-        width: '100%',
-        height: 120,
-        borderRadius: 8,
-        marginBottom: 4,
-        backgroundColor: '#f9f9f9',
+        width: '80%',
+        height: '80%',
+        opacity: 0.8,
     },
     itemImage: {
-        width: '100%',
-        height: 120,
-        borderRadius: 8,
-        marginBottom: 4,
-        backgroundColor: '#f9f9f9'
+        width: '90%',
+        height: '90%',
     },
     metaRow: {
         flexDirection: 'row',
         justifyContent: 'space-between',
+        alignItems: 'center',
     },
     cardTitle: {
-        fontSize: 12,
-        fontWeight: 'bold',
-        color: 'black',
+        color: COLORS.text,
+        fontSize: 14,
+        fontWeight: '500',
         flex: 1,
-        marginRight: 4,
     },
     distanceText: {
+        color: COLORS.accent, // Yellow
         fontSize: 12,
         fontWeight: 'bold',
-        color: 'black',
+    },
+    grid: {
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        justifyContent: 'space-between',
+    },
+    gridItem: {
+        width: '31%', // 3 columns
+        marginBottom: SPACING.m,
     }
 });

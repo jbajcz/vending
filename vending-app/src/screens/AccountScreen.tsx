@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Image, Switch, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { COLORS, SPACING, RADIUS } from '../constants/theme';
 import { Ionicons } from '@expo/vector-icons';
@@ -7,88 +7,151 @@ import { Ionicons } from '@expo/vector-icons';
 export default function AccountScreen() {
     return (
         <SafeAreaView style={styles.container}>
-            {/* Header */}
-            <View style={styles.header}>
-                <Text style={styles.nameText}>First Last</Text>
-                <Ionicons name="person-circle-outline" size={40} color="black" />
-            </View>
+            <View style={styles.content}>
+                {/* Header */}
+                <Text style={styles.headerTitle}>Account</Text>
+                <Text style={styles.userName}>Jack Adams</Text>
 
-            {/* Pills Row */}
-            <View style={styles.pillsRow}>
-                <View style={styles.pill}><Text style={styles.pillText}>Link Card</Text></View>
-                <View style={styles.pill}><Text style={styles.pillText}>Help</Text></View>
-                <View style={styles.pill}><Text style={styles.pillText}>ALLY</Text></View>
-            </View>
-
-            {/* Credit Card */}
-            <View style={styles.cardContainer}>
-                <View style={styles.cardInnerMock} />
-                <View style={styles.cardDetails}>
-                    <Text style={styles.cardLabel}>Card Account</Text>
-                    <Text style={styles.cardLabel}>x1111</Text>
-                    <Text style={styles.cardLabel}>EXP 2/30</Text>
-                </View>
-
-                <View style={styles.cardActions}>
-                    <TouchableOpacity style={styles.smallButton}>
-                        <Text style={styles.smallButtonText}>Add New</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.smallButton}>
-                        <Text style={styles.smallButtonText}>Remove</Text>
+                {/* Payment Methods */}
+                <View style={styles.sectionHeaderRow}>
+                    <Text style={styles.sectionTitle}>Payment Methods</Text>
+                    <TouchableOpacity>
+                        <Text style={styles.addNew}>+ Add new</Text>
                     </TouchableOpacity>
                 </View>
-            </View>
 
+                {/* Visa Cards List */}
+                <View style={styles.paymentList}>
+                    {[1, 2, 3].map((_, i) => (
+                        <View key={i} style={styles.paymentRow}>
+                            <View style={styles.cardIcon}>
+                                <Text style={styles.cardIconText}>VISA</Text>
+                            </View>
+                            <View style={styles.cardDetails}>
+                                <Text style={styles.cardName}>Visa •••••1111</Text>
+                                <Text style={styles.cardExp}>John Adams • 11/2029</Text>
+                            </View>
+                        </View>
+                    ))}
+                    <View style={styles.divider} />
+                </View>
+
+                {/* Settings */}
+                <TouchableOpacity style={styles.actionButton}>
+                    <Text style={styles.actionButtonText}>Settings</Text>
+                </TouchableOpacity>
+
+                <View style={styles.settingRow}>
+                    <Text style={styles.settingText}>Text-to-speech</Text>
+                    <Switch value={true} trackColor={{ false: "#767577", true: COLORS.primary }} thumbColor={"#f4f3f4"} />
+                </View>
+
+                <TouchableOpacity style={[
+                    styles.actionButton,
+                    { backgroundColor: '#666', marginTop: SPACING.l }
+                ]}>
+                    <Text style={styles.actionButtonText}>Log out</Text>
+                </TouchableOpacity>
+
+            </View>
         </SafeAreaView>
     );
 }
 
 const styles = StyleSheet.create({
-    container: { flex: 1, backgroundColor: COLORS.card, padding: SPACING.m },
-    header: {
+    container: { flex: 1, backgroundColor: COLORS.background },
+    content: { padding: SPACING.l },
+
+    headerTitle: {
+        fontSize: 32,
+        fontWeight: 'bold',
+        color: COLORS.text,
+        textAlign: 'center',
+    },
+    userName: {
+        fontSize: 32,
+        fontWeight: 'bold',
+        color: '#8BC34A', // Greenish from screenshot
+        textAlign: 'center',
+        marginBottom: SPACING.xl,
+    },
+    sectionHeaderRow: {
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        marginBottom: SPACING.l,
-        paddingHorizontal: SPACING.s
+        marginBottom: SPACING.m,
     },
-    nameText: { fontSize: 24, fontWeight: 'bold' },
-    pillsRow: {
+    sectionTitle: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        color: COLORS.text,
+    },
+    addNew: {
+        color: '#4A90E2', // Blue
+        fontSize: 14,
+    },
+    paymentList: {
+        marginBottom: SPACING.xl,
+    },
+    paymentRow: {
         flexDirection: 'row',
-        marginBottom: SPACING.l,
+        alignItems: 'center',
+        marginBottom: SPACING.m,
+        borderBottomWidth: 1,
+        borderBottomColor: '#444',
+        paddingBottom: SPACING.m,
     },
-    pill: {
-        backgroundColor: '#E0E0E0',
-        paddingHorizontal: 16,
-        paddingVertical: 8,
-        borderRadius: 20,
-        marginRight: 8
+    cardIcon: {
+        width: 60,
+        height: 40,
+        backgroundColor: '#FFF',
+        borderRadius: 4,
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginRight: SPACING.m,
     },
-    pillText: { fontWeight: 'bold', fontSize: 13 },
-
-    cardContainer: {
-        backgroundColor: '#D9D9D9',
-        borderRadius: 20,
+    cardIconText: {
+        color: '#1A1F71', // Visa Blue
+        fontWeight: '900',
+        fontSize: 16,
+        fontStyle: 'italic',
+    },
+    cardDetails: {
+        flex: 1,
+    },
+    cardName: {
+        color: COLORS.text,
+        fontSize: 16,
+        fontWeight: '500',
+    },
+    cardExp: {
+        color: '#AAA',
+        fontSize: 12,
+    },
+    divider: {
+        borderBottomWidth: 1,
+        borderBottomColor: '#444',
+    },
+    actionButton: {
+        backgroundColor: '#555',
         padding: SPACING.m,
-        height: 250,
+        borderRadius: RADIUS.m,
+        marginBottom: SPACING.m,
+        alignItems: 'center',
     },
-    cardInnerMock: {
-        backgroundColor: 'white',
-        height: 100,
-        borderRadius: 16,
-        marginBottom: SPACING.m
+    actionButtonText: {
+        color: COLORS.text,
+        fontSize: 16,
+        fontWeight: '500',
     },
-    cardDetails: { marginBottom: SPACING.m },
-    cardLabel: { fontWeight: 'bold', fontSize: 14 },
-    cardActions: {
-        flexDirection: 'row'
+    settingRow: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginBottom: SPACING.m,
     },
-    smallButton: {
-        backgroundColor: 'white',
-        paddingHorizontal: 16,
-        paddingVertical: 6,
-        borderRadius: 12,
-        marginRight: SPACING.s
-    },
-    smallButtonText: { fontSize: 12, fontWeight: 'bold' }
+    settingText: {
+        color: COLORS.text,
+        fontSize: 18,
+    }
 });

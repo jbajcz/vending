@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity, Image } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useNavigation } from '@react-navigation/native';
 import { COLORS, SPACING, RADIUS } from '../constants/theme';
 import { runQuery } from '../services/db';
 import { Purchase } from '../types';
@@ -8,6 +9,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { ITEM_IMAGES } from '../constants/assets';
 
 export default function ActivityScreen() {
+    const navigation = useNavigation<any>();
     const [purchases, setPurchases] = useState<Purchase[]>([]);
 
     useEffect(() => {
@@ -39,7 +41,10 @@ export default function ActivityScreen() {
                 <Text style={styles.listSub}>{item.timestamp} • {item.item_name}</Text>
                 <Text style={styles.listPrice}>$1.50</Text>
             </View>
-            <TouchableOpacity style={styles.reorderButton}>
+            <TouchableOpacity
+                style={styles.reorderButton}
+                onPress={() => item.item_name && navigation.navigate('Map', { searchItem: item.item_name })}
+            >
                 <Text style={styles.reorderText}>Reorder</Text>
             </TouchableOpacity>
         </View>

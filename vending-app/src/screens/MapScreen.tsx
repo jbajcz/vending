@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, StyleSheet, TextInput, ScrollView, Image, Linking, Platform, TouchableOpacity, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import MapView, { Marker, Callout } from 'react-native-maps';
+import { useRoute, useFocusEffect } from '@react-navigation/native';
 import { COLORS, SPACING, SHADOWS, RADIUS } from '../constants/theme';
 import { runQuery } from '../services/db';
 import { VendingMachine } from '../types';
@@ -21,6 +22,7 @@ const normalizeText = (text: string) => {
 };
 
 export default function MapScreen() {
+    const route = useRoute<any>();
     const [machines, setMachines] = useState<VendingMachine[]>([]);
     const [region, setRegion] = useState(DEFAULT_REGION);
     const [searchText, setSearchText] = useState('');
@@ -29,6 +31,15 @@ export default function MapScreen() {
     useEffect(() => {
         loadMachines();
     }, []);
+
+    useFocusEffect(
+        useCallback(() => {
+            if (route.params?.searchItem) {
+                setSearchText(route.params.searchItem);
+                // Optional: Clear params to avoid sticky search if needed
+            }
+        }, [route.params?.searchItem])
+    );
 
     useEffect(() => {
         handleSearch(searchText);
