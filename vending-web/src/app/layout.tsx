@@ -14,28 +14,28 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <aside class="sidebar">
-          <div class="brand">
-            <div class="brand-icon"></div>
+        <aside className="sidebar">
+          <div className="brand">
+            <div className="brand-icon"></div>
             Vendor
           </div>
 
-          <ul class="menu">
-            <li class="menu-item"><span class="menu-icon">◎</span> Dashboard</li>
-            <li class="menu-item"><span class="menu-icon">◎</span> Machines</li>
-            <li class="menu-item"><span class="menu-icon">◎</span> Inventory</li>
-            <li class="menu-item"><span class="menu-icon">◎</span> Reports</li>
-            <li class="menu-item"><span class="menu-icon">◎</span> Settings</li>
+          <ul className="menu">
+            <li className="menu-item"><span className="menu-icon">◎</span> Dashboard</li>
+            <li className="menu-item"><span className="menu-icon">◎</span> Machines</li>
+            <li className="menu-item"><span className="menu-icon">◎</span> Inventory</li>
+            <li className="menu-item"><span className="menu-icon">◎</span> Reports</li>
+            <li className="menu-item"><span className="menu-icon">◎</span> Settings</li>
           </ul>
 
-          <div class="logout">
+          <div className="logout">
             Log Out
           </div>
         </aside>
 
-        <main class="main-content">
+        <main className="main-content">
           {/* Top Header */}
-          <header class="top-bar">
+          <header className="top-bar">
             Home Dash
           </header>
 

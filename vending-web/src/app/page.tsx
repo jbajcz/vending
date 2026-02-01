@@ -17,17 +17,11 @@ export default function Home() {
         <table style={{ width: '100%', textAlign: 'left', fontSize: '14px' }}>
           <thead>
             <tr>
-              <th>Status</th>
-              <th>Address</th>
-              <th>Accessibility</th>
             </tr>
           </thead>
           <tbody>
             {machines.map((m) => (
               <tr key={m.machine_id} style={{ borderBottom: '1px solid #eee', height: '40px' }}>
-                <td><span style={{ color: 'green' }}>● Online</span></td>
-                <td>{m.address}</td>
-                <td>{m.accessible_features || 'Standard'}</td>
               </tr>
             ))}
           </tbody>
@@ -83,12 +77,53 @@ export default function Home() {
         </div>
       </div>
 
-      {/* 4. Map View (Placeholder for now, implementation complex) */}
+      {/* 4. Recent Orders */}
       <div className="card full-width">
-        <div className="card-title">Live Map</div>
-        <div style={{ background: '#eee', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#888' }}>
-          Map Component would go here (Requires Client Component with Leaflet)
-        </div>
+        <div className="card-title">Recent Order</div>
+        <table style={{ width: '100%', textAlign: 'left', fontSize: '13px' }}>
+          <thead>
+            <tr>
+              <th>Order ID</th>
+              <th>Product</th>
+              <th>Order Time</th>
+              <th>Status</th>
+              <th>Qty</th>
+              <th>Total Price</th>
+              <th>Customer</th>
+            </tr>
+          </thead>
+          <tbody>
+            {(() => {
+              const db = getDb();
+              const purchases = db.prepare(`
+                SELECT 
+                  p.purchase_id, 
+                  i.name as product_name, 
+                  p.timestamp, 
+                  'Completed' as status,
+                  1 as qty,
+                  1.50 as price,
+                  u.name as customer_name
+                FROM purchases p
+                JOIN items i ON p.item_id = i.item_id
+                JOIN users u ON p.user_id = u.user_id
+                LIMIT 5
+              `).all() as any[];
+              
+              return purchases.map((order) => (
+                <tr key={order.purchase_id} style={{ borderBottom: '1px solid #eee', height: '40px' }}>
+                  <td>{order.purchase_id}</td>
+                  <td>{order.product_name}</td>
+                  <td>{order.timestamp}</td>
+                  <td><span style={{ color: 'green', fontWeight: 'bold' }}>●</span> {order.status}</td>
+                  <td>{order.qty}</td>
+                  <td>${order.price.toFixed(2)}</td>
+                  <td>{order.customer_name}</td>
+                </tr>
+              ));
+            })()}
+          </tbody>
+        </table>
       </div>
 
     </div>
