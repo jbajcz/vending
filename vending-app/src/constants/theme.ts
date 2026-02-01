@@ -1,59 +1,38 @@
 export const COLORS = {
-    primary: '#2563EB', // Electric Blue
-    secondary: '#10B981', // Emerald Green
-    accent: '#F59E0B', // Amber
-    background: '#F8FAFC',
-    card: '#FFFFFF',
-    text: '#1E293B',
-    subtext: '#64748B',
-    border: '#E2E8F0',
-    error: '#EF4444',
-
-    // Dark Mode
-    dark: {
-        background: '#0F172A',
-        card: '#1E293B',
-        text: '#F8FAFC',
-        subtext: '#94A3B8',
-        border: '#334155',
-    }
+    background: '#222222',
+    card: '#333333',
+    text: '#FFFFFF',
+    subtext: '#AAAAAA',
+    primary: '#4A90E2', // Blue for links/actions
+    accent: '#FFC107', // Yellow/Gold from screenshots
+    success: '#7ED321', // Green
+    inputBackground: '#FFFFFF',
+    placeholder: '#888888',
+    iconGreen: '#8BC34A',
+    iconOrange: '#F5A623',
+    iconWhite: '#E0E0E0',
+    iconBlue: '#4A90E2',
 };
 
 export const SPACING = {
-    xs: 4,
     s: 8,
     m: 16,
     l: 24,
     xl: 32,
-    xxl: 48,
 };
 
 export const RADIUS = {
     s: 8,
     m: 12,
-    l: 24,
-    full: 9999,
+    l: 25, // Pill shape
 };
 
 export const SHADOWS = {
-    light: {
+    default: {
         shadowColor: "#000",
-        shadowOffset: {
-            width: 0,
-            height: 2,
-        },
-        shadowOpacity: 0.1,
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.25,
         shadowRadius: 3.84,
-        elevation: 3,
-    },
-    medium: {
-        shadowColor: "#000",
-        shadowOffset: {
-            width: 0,
-            height: 4,
-        },
-        shadowOpacity: 0.15,
-        shadowRadius: 8,
-        elevation: 8,
+        elevation: 5,
     }
 };
