@@ -43,38 +43,32 @@ def run_seed():
     # 3. Insert Items
     items = [
         # Drinks
-        ('Coca-Cola', 'Drink'), ('Diet Coke', 'Drink'), ('Sprite', 'Drink'), ('Dr Pepper', 'Drink'), ('Pepsi', 'Drink'),
-        ('Mountain Dew', 'Drink'), ('Fanta Orange', 'Drink'), ('Fanta Grape', 'Drink'), ('Root Beer', 'Drink'), ('Ginger Ale', 'Drink'),
-        ('Iced Tea', 'Drink'), ('Lemonade', 'Drink'), ('Dasani Water', 'Drink'), ('Smartwater', 'Drink'), ('Vitamin Water', 'Drink'),
-        ('Gatorade Blue', 'Drink'), ('Gatorade Red', 'Drink'), ('Red Bull', 'Drink'), ('Monster Energy', 'Drink'), ('Cold Coffee', 'Drink'),
+        ('Coca-Cola', 'Drink', 1.75), ('Sprite', 'Drink', 1.75), ('Dr Pepper', 'Drink', 1.75), ('Pepsi', 'Drink', 1.75),
+        ('Dasani Water', 'Drink', 1.50), ('Vitamin Water', 'Drink', 2.25), ('Red Bull', 'Drink', 3.00), ('Gatorade', 'Drink', 2.00),
         
         # Snacks
-        ('Doritos', 'Snack'), ('Cheetos', 'Snack'), ('Lays Classic', 'Snack'), ('Lays BBQ', 'Snack'), ('Ruffles', 'Snack'),
-        ('Pringles', 'Snack'), ('Fritos', 'Snack'), ('Goldfish', 'Snack'), ('Cheez-its', 'Snack'), ('Pretzels', 'Snack'),
-        ('Popcorn', 'Snack'), ('Beef Jerky', 'Snack'), ('Slim Jim', 'Snack'), ('Pork Rinds', 'Snack'), ('Onion Rings', 'Snack'),
-        ('Bugles', 'Snack'), ('Sun Chips', 'Snack'), ('Ritz Crackers', 'Snack'), ('Wheat Thins', 'Snack'), ('Cheese Puffs', 'Snack'),
+        ('Doritos', 'Snack', 1.75), ('Cheez-its', 'Snack', 1.75), ('Pretzels', 'Snack', 1.50), ('Oreos', 'Snack', 2.00),
+        ('Trail Mix', 'Snack', 2.25), ('Granola Bar', 'Snack', 1.25), ('Protein Bar', 'Snack', 2.50),
         
         # Candy
-        ('Snickers', 'Candy'), ('M&Ms', 'Candy'), ('Peanut M&Ms', 'Candy'), ('KitKat', 'Candy'), ('Twix', 'Candy'),
-        ('Reeses', 'Candy'), ('Hershey Bar', 'Candy'), ('Milky Way', 'Candy'), ('3 Musketeers', 'Candy'), ('Butterfinger', 'Candy'),
-        ('Skittles', 'Candy'), ('Starburst', 'Candy'), ('Sour Patch Kids', 'Candy'), ('Gummy Bears', 'Candy'), ('Swedish Fish', 'Candy'),
-        ('Nerds', 'Candy'), ('Smarties', 'Candy'), ('Jolly Ranchers', 'Candy'), ('Altoids', 'Candy'), ('Tic Tacs', 'Candy'),
+        ('Snickers', 'Candy', 1.50), ('M&Ms', 'Candy', 1.50), ('Reeses', 'Candy', 1.50),
         
         # Health
-        ('Granola Bar', 'Health'), ('Protein Bar', 'Health'), ('Apple', 'Health'), ('Banana', 'Health'), ('Orange', 'Health'),
-        ('Grapes', 'Health'), ('Yogurt', 'Health'), ('Hummus Chips', 'Health'), ('Trail Mix', 'Health'), ('Almonds', 'Health'),
-        ('Cashews', 'Health'), ('Peanuts', 'Health'), ('Pistachios', 'Health'), ('Fruit Cup', 'Health'), ('Veggie Straws', 'Health'),
-        ('Rice Cakes', 'Health'), ('Seaweed Snacks', 'Health'), ('Dried Mango', 'Health'), ('Raisins', 'Health'), ('Apple Sauce', 'Health'),
+        ('Apple', 'Health', 1.00), ('Banana', 'Health', 0.75),
         
         # Meals
-        ('Ham Sandwich', 'Meal'), ('Turkey Sandwich', 'Meal'), ('Tuna Wrap', 'Meal'), ('Chicken Caesar Salad', 'Meal'), ('Garden Salad', 'Meal'),
-        ('Pasta Salad', 'Meal'), ('Sushi Roll', 'Meal'), ('Burrito', 'Meal'), ('Pizza Slice', 'Meal'), ('Hot Pocket', 'Meal'),
-        ('Cup Noodles', 'Meal'), ('Mac n Cheese', 'Meal'), ('Soup Bowl', 'Meal'), ('Bagel Cream Cheese', 'Meal'), ('Croissant', 'Meal'),
-        ('Muffin', 'Meal'), ('Donut', 'Meal'), ('Hard Boiled Eggs', 'Meal'), ('Cheese Stick Crackers', 'Meal'), ('Lunchable', 'Meal')
+        ('Ham Sandwich', 'Meal', 6.50), ('Turkey Sandwich', 'Meal', 6.50), ('Tuna Wrap', 'Meal', 7.00), ('Chicken Caesar Salad', 'Meal', 7.50), ('Garden Salad', 'Meal', 6.00),
+        ('Pasta Salad', 'Meal', 6.50), ('Sushi Roll', 'Meal', 8.50), ('Burrito', 'Meal', 7.50), ('Pizza Slice', 'Meal', 4.50), ('Hot Pocket', 'Meal', 3.50),
+        ('Cup Noodles', 'Meal', 2.00), ('Mac n Cheese', 'Meal', 3.00), ('Soup Bowl', 'Meal', 4.00), ('Bagel Cream Cheese', 'Meal', 3.50), ('Croissant', 'Meal', 3.00),
+        ('Muffin', 'Meal', 2.50), ('Donut', 'Meal', 1.50), ('Hard Boiled Eggs', 'Meal', 2.00), ('Cheese Stick Crackers', 'Meal', 2.50), ('Lunchable', 'Meal', 4.50)
     ]
-    cursor.executemany("INSERT INTO items (name, category) VALUES (?, ?)", items)
-    cursor.execute("SELECT item_id, name FROM items")
-    item_map = {name: id for id, name in cursor.fetchall()}
+    cursor.executemany("INSERT INTO items (name, category, price) VALUES (?, ?, ?)", items)
+    
+    # Create lookup maps
+    cursor.execute("SELECT item_id, name, price FROM items")
+    rows = cursor.fetchall()
+    item_map = {row[1]: row[0] for row in rows} # name -> id
+    price_map = {row[0]: row[2] for row in rows} # id -> price
 
     # 4. Insert Machines (50 Machines around a center point)
     machines = []
@@ -101,7 +95,7 @@ def run_seed():
 
     # 5. Inventory
     inventory_data = []
-    item_ids = list(item_map.values())
+    item_ids = list(price_map.keys())
     
     for mid in machine_ids:
         # Stock random selection of items
@@ -133,7 +127,7 @@ def run_seed():
         ts = start_date + timedelta(days=days_offset, seconds=seconds_offset)
         ts_str = ts.strftime('%Y-%m-%d %H:%M:%S')
         
-        credits = random.choice([5, 10, 15, 20]) # Price simulation
+        credits = price_map[iid] # Use actual price
         purchases.append((uid, mid, iid, ts_str, credits))
 
     cursor.executemany("INSERT INTO purchases (user_id, machine_id, item_id, timestamp, credits_earned) VALUES (?, ?, ?, ?, ?)", purchases)
