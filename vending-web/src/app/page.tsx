@@ -82,26 +82,78 @@ export default function Home() {
           </div>
         </div>
 
-      {/* 4. Recent Orders */}
-      <div className="card recent-orders">
-        <div className="card-header">
-          <div className="card-title" style={{ marginTop: '5px' }}>Recent order</div>
+        {/* 2. Messages / Alerts */}
+        <div className="card message-list">
+          <div className="card-title">Inbox</div>
+          {/* Messages (scrollable) */}
+          {(() => {
+            const messages = [
+              { id: 1, title: 'System Alert', body: 'Weekly report generated.', unread: true, time: '2h' },
+              { id: 2, title: 'Inventory Low', body: 'Abbot Hall is low on Coke.', unread: true, time: '3h' },
+              { id: 3, title: 'Maintenance', body: 'Gym machine scheduled for service.', unread: false, time: '6h' },
+            ];
+
+            return messages.map((m) => (
+              <div key={m.id} className="message-item">
+                <img src="/vending-machine.png" alt="notification" className="message-avatar" />
+                <div style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <div style={{ display: 'flex', alignItems: 'center' }}>
+                      {m.unread && <span className="unread-dot" />}
+                      <strong style={{ fontSize: 13 }}>{m.title}</strong>
+                    </div>
+                    <span style={{ fontSize: 12, color: '#999' }}>{m.time}</span>
+                  </div>
+                  <span style={{ fontSize: 11, color: '#666' }}>{m.body}</span>
+                </div>
+              </div>
+            ));
+          })()}
         </div>
-        <table className="orders-table">
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>Product</th>
-              <th>Date</th>
-              <th>Status</th>
-              <th>Price</th>
-              <th>Customer</th>
-            </tr>
-          </thead>
-          <tbody>
-            {(() => {
-              const db = getDb();
-              const purchases = db.prepare(`
+
+        {/* Top Products */}
+        <div className="card products-card">
+          <div className="card-header">
+            <div className="card-title">Top Products</div>
+            <button className="icon-btn" type="button" aria-label="More">⋯</button>
+          </div>
+          <div className="products-list">
+            {topProducts.map((p, idx) => {
+              const imageName = getImageName(p.name);
+              return (
+                <div key={idx} className="product-row">
+                  <img src={`/${imageName}.png`} alt={p.name} className="product-thumb" />
+                  <div className="product-info">
+                    <div className="product-name">{p.name}</div>
+                    <div className="product-meta">{p.total_sold} sold</div>
+                  </div>
+                  <div className="product-price">${p.total_revenue.toFixed(2)}</div>
+                </div>
+              )
+            })}
+          </div>
+        </div>
+
+        {/* 4. Recent Orders */}
+        <div className="card recent-orders">
+          <div className="card-header">
+            <div className="card-title" style={{ marginTop: '5px' }}>Recent order</div>
+          </div>
+          <table className="orders-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Product</th>
+                <th>Date</th>
+                <th>Status</th>
+                <th>Price</th>
+                <th>Customer</th>
+              </tr>
+            </thead>
+            <tbody>
+              {(() => {
+                const db = getDb();
+                const purchases = db.prepare(`
                 SELECT 
                   p.purchase_id, 
                   i.name as product_name, 
@@ -115,87 +167,30 @@ export default function Home() {
                 ORDER BY p.timestamp DESC
                 LIMIT 15
               `).all() as any[];
-              
-              return purchases.map((order, index) => {
-                const imageName = getImageName(order.product_name);
-                return (
-                <tr key={order.purchase_id}>
-                  <td>{index + 1}</td>
-                  <td>
-                    <div className="order-product">
-                      <img src={`/${imageName}.png`} alt={order.product_name} className="order-thumb" />
-                      <div className="order-name">{order.product_name}</div>
-                    </div>
-                  </td>
-                  <td>{new Date(order.timestamp).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</td>
-                  <td>
-                    <span className="status-pill">{order.status}</span>
-                  </td>
-                  <td>${order.price.toFixed(2)}</td>
-                  <td>{order.customer_name}</td>
-                </tr>
-              )});
-            })()}
-          </tbody>
-        </table>
-      </div>
 
-      {/* 2. Messages / Alerts */}
-      <div className="card message-list">
-        <div className="card-title">Inbox</div>
-        {/* Messages (scrollable) */}
-        {(() => {
-          const messages = [
-            { id: 1, title: 'System Alert', body: 'Weekly report generated.', unread: true, time: '2h' },
-            { id: 2, title: 'Inventory Low', body: 'Abbot Hall is low on Coke.', unread: true, time: '3h' },
-            { id: 3, title: 'Maintenance', body: 'Gym machine scheduled for service.', unread: false, time: '6h' },
-            { id: 4, title: 'New User', body: 'John Doe registered an account.', unread: false, time: '1d' },
-            { id: 5, title: 'Survey', body: 'New feedback submitted for Doritos.', unread: true, time: '2d' },
-            { id: 6, title: 'Alert', body: 'Sensor reported a jam at Library.', unread: false, time: '2d' },
-            { id: 7, title: 'Promo', body: 'New promo code available: SAVE10.', unread: true, time: '3d' },
-            { id: 8, title: 'Report', body: 'Monthly sales report ready.', unread: false, time: '4d' },
-            { id: 9, title: 'Restock', body: 'Tray refill requested at Gym.', unread: true, time: '5d' },
-            { id: 10, title: 'Reminder', body: 'Check machine 12 battery.', unread: false, time: '6d' }
-          ];
-
-          return messages.map((m) => (
-            <div key={m.id} className="message-item">
-              <img src="/vending-machine.png" alt="notification" className="message-avatar" />
-              <div style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                  <div style={{ display: 'flex', alignItems: 'center' }}>
-                    {m.unread && <span className="unread-dot" />}
-                    <strong style={{ fontSize: 13 }}>{m.title}</strong>
-                  </div>
-                  <span style={{ fontSize: 12, color: '#999' }}>{m.time}</span>
-                </div>
-                <span style={{ fontSize: 11, color: '#666' }}>{m.body}</span>
-              </div>
-            </div>
-          ));
-        })()}
-      </div>
-
-        {/* Top Products */}
-        <div className="card products-card">
-          <div className="card-header">
-            <div className="card-title">Products sold</div>
-            <button className="icon-btn" type="button" aria-label="More">⋯</button>
-          </div>
-          <div className="products-list">
-            {topProducts.map((p, idx) => {
-              const imageName = getImageName(p.name);
-              return (
-              <div key={idx} className="product-row">
-                <img src={`/${imageName}.png`} alt={p.name} className="product-thumb" />
-                <div className="product-info">
-                  <div className="product-name">{p.name}</div>
-                  <div className="product-meta">{p.total_sold} sold</div>
-                </div>
-                <div className="product-price">${p.total_revenue.toFixed(2)}</div>
-              </div>
-            )})}
-          </div>
+                return purchases.map((order, index) => {
+                  const imageName = getImageName(order.product_name);
+                  return (
+                    <tr key={order.purchase_id}>
+                      <td>{index + 1}</td>
+                      <td>
+                        <div className="order-product">
+                          <img src={`/${imageName}.png`} alt={order.product_name} className="order-thumb" />
+                          <div className="order-name">{order.product_name}</div>
+                        </div>
+                      </td>
+                      <td>{new Date(order.timestamp).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</td>
+                      <td>
+                        <span className="status-pill">{order.status}</span>
+                      </td>
+                      <td>${order.price.toFixed(2)}</td>
+                      <td>{order.customer_name}</td>
+                    </tr>
+                  )
+                });
+              })()}
+            </tbody>
+          </table>
         </div>
 
       </div>

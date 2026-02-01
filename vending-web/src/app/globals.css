@@ -1,12 +1,12 @@
 :root {
-  --background: #f4f4f4;
+  --background: #E6EAED;
   --foreground: #171717;
-  --sidebar-bg: #1e2a4a;
+  --sidebar-bg: #052444;
   --sidebar-contrast: #e6eef9;
   --sidebar-text: #9aa6b8;
   --sidebar-active-bg: #ffffff;
   --card-bg: #ffffff;
-  --primary: #1e2a4a;
+  --primary: #052444;
   --tooltip-bg: #ffffff;
   --tooltip-text: #222;
 }
@@ -19,9 +19,21 @@ body {
   padding: 0;
   display: flex;
   min-height: 100vh;
-  /* prevent horizontal overflow; allow vertical scrolling */
-  overflow-x: hidden;
-  overflow-y: auto;
+  /* prevent content from scrolling the body itself */
+  overflow: hidden;
+}
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+*::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+* {
+  -ms-overflow-style: none;
+  /* IE and Edge */
+  scrollbar-width: none;
+  /* Firefox */
 }
 
 /* Sidebar */
@@ -35,7 +47,7 @@ body {
   padding: 12px 8px;
   flex-shrink: 0;
   align-items: center;
-  border-right: 1px solid rgba(18,24,40,0.04);
+  border-right: 1px solid rgba(18, 24, 40, 0.04);
   position: sticky;
   top: 0;
   left: 0;
@@ -111,7 +123,7 @@ body {
   color: var(--tooltip-text);
   padding: 8px 10px;
   border-radius: 8px;
-  box-shadow: 0 6px 18px rgba(20,30,50,0.08);
+  box-shadow: 0 6px 18px rgba(20, 30, 50, 0.08);
   opacity: 0;
   pointer-events: none;
   white-space: nowrap;
@@ -134,7 +146,7 @@ body {
 .menu-item.active {
   background: var(--sidebar-active-bg);
   color: var(--primary);
-  box-shadow: 0 4px 12px rgba(16,24,40,0.06);
+  box-shadow: 0 4px 12px rgba(16, 24, 40, 0.06);
 }
 
 .menu-item:not(.active) {
@@ -154,7 +166,7 @@ body {
 .menu-item.logout {
   width: 100%;
   justify-content: center;
-  border-top: 1px solid rgba(18,24,40,0.03);
+  border-top: 1px solid rgba(18, 24, 40, 0.03);
   padding-top: 12px;
 }
 
@@ -170,22 +182,24 @@ body {
 .main-content {
   width: calc(100% - 72px);
   box-sizing: border-box;
-  min-width: 0; /* allow children to shrink */
+  min-width: 0;
+  /* allow children to shrink */
 }
 
 .top-bar {
   height: 60px;
-  background-color: white; /* Light grey header from screenshot */
+  background-color: white;
+  /* Light grey header from screenshot */
   display: flex;
   align-items: center;
   padding: 12px;
   color: #555;
   justify-content: space-between;
   gap: 12px;
-  border: 1px solid rgba(16,24,40,0.05);
+  border: 1px solid rgba(16, 24, 40, 0.05);
   border-radius: 12px;
   margin: 12px;
-  box-shadow: 0 2px 6px rgba(16,24,40,0.06);
+  box-shadow: 0 2px 6px rgba(16, 24, 40, 0.06);
 }
 
 
@@ -207,7 +221,7 @@ body {
   height: 32px;
   width: 260px;
   border-radius: 12px;
-  border: 1px solid rgba(16,24,40,0.08);
+  border: 1px solid rgba(16, 24, 40, 0.08);
   background: #f3f4f6;
   padding: 0 10px;
   font-size: 13px;
@@ -219,7 +233,7 @@ body {
   width: 38px;
   height: 38px;
   border-radius: 8px;
-  border: 1px solid rgba(16,24,40,0.08);
+  border: 1px solid rgba(16, 24, 40, 0.08);
   background: #3b82f6;
   color: #ffffff;
   display: inline-flex;
@@ -313,7 +327,7 @@ body {
   height: 32px;
   padding: 0 12px;
   border-radius: 999px;
-  border: 1px solid rgba(16,24,40,0.08);
+  border: 1px solid rgba(16, 24, 40, 0.08);
   background: #ffffff;
   font-size: 12px;
   font-weight: 600;
@@ -325,7 +339,7 @@ body {
   height: 32px;
   padding: 0 12px;
   border-radius: 999px;
-  border: 1px solid rgba(16,24,40,0.08);
+  border: 1px solid rgba(16, 24, 40, 0.08);
   background: #ffffff;
   font-size: 12px;
   font-weight: 600;
@@ -334,9 +348,9 @@ body {
 }
 
 .action-btn.primary {
-  background: #1d1f3b;
+  background: #052444;
   color: #ffffff;
-  border-color: #1d1f3b;
+  border-color: #052444;
 }
 
 
@@ -353,6 +367,8 @@ body {
   box-sizing: border-box;
   max-width: 100%;
   overflow-x: hidden;
+  grid-auto-flow: dense;
+  /* Fill empty spots (like top-right) */
 }
 
 /* Ensure grid fits within the viewport beneath the top bar and scrolls internally */
@@ -365,7 +381,7 @@ body {
   background: var(--card-bg);
   border-radius: 8px;
   padding: 12px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
   display: flex;
   flex-direction: column;
   /* prevent any single card from overflowing the viewport */
@@ -374,7 +390,8 @@ body {
 }
 
 /* Make SVGs and images responsive inside cards */
-.card svg, .card img {
+.card svg,
+.card img {
   max-width: 100%;
   height: auto;
 }
@@ -398,7 +415,7 @@ body {
   height: 28px;
   padding: 0 10px;
   border-radius: 999px;
-  border: 1px solid rgba(16,24,40,0.08);
+  border: 1px solid rgba(16, 24, 40, 0.08);
   background: #ffffff;
   font-size: 11px;
   font-weight: 600;
@@ -419,8 +436,9 @@ body {
 
 .total-sales {
   grid-column: 1;
-  min-height: 143px;
-  background: #17164b;
+  height: 170px;
+  /* Same height as Vending Machines */
+  background: #052444;
   color: #ffffff;
   width: 100%;
   max-width: 170px;
@@ -523,7 +541,7 @@ body {
   padding: 10px 8px;
   border-bottom: 1px solid #eef2f7;
 }
- 
+
 .orders-table th {
   font-size: 11px;
   font-weight: 600;
@@ -571,7 +589,8 @@ body {
 /* Specific Widget Styles */
 .machine-list {
   grid-column: 1 / 2;
-  height: 140px; /* Reduced height to fit */
+  height: 140px;
+  /* Reduced height to fit */
   padding: 12px;
   max-height: 180px;
   overflow: auto;
@@ -602,6 +621,10 @@ body {
   height: 40px;
   object-fit: contain;
   margin-bottom: 4px;
+  background: #e0f7fa;
+  /* Light blue box */
+  padding: 6px;
+  border-radius: 8px;
 }
 
 .machine-name {
@@ -618,16 +641,6 @@ body {
   overflow: auto;
 }
 
-/* Show 5 full messages and a partially-cut 6th to indicate more */
-.message-list {
-  /* message item target height */
-  --msg-h: 50px;
-  /* show 5.5 items */
-  height: calc(var(--msg-h) * 5.5 + 12px); /* extra for card padding */
-  max-height: calc(var(--msg-h) * 5.5 + 12px);
-  overflow: auto;
-}
-
 .stat-card-1 {
   grid-column: 1 / 2;
   display: grid;
@@ -640,11 +653,12 @@ body {
 
 .machine-carousel {
   grid-column: 2;
-  background: #17164b;
+  background: #052444;
   color: #ffffff;
   width: 100%;
   max-width: 600px;
-  min-height: 140px;
+  height: 170px;
+  /* Exact match with total-sales */
   justify-self: start;
 }
 
@@ -664,7 +678,7 @@ body {
 }
 
 .carousel-card {
-  background: #1f1f5c;
+  background: #052444;
   border-radius: 12px;
   padding: 10px;
   display: flex;
@@ -678,7 +692,7 @@ body {
   width: 40px;
   height: 20px;
   border-radius: 10px;
-  background: rgba(255,255,255,0.12);
+  background: rgba(255, 255, 255, 0.12);
   object-fit: contain;
 }
 
@@ -689,7 +703,7 @@ body {
 
 .carousel-sub {
   font-size: 10px;
-  color: rgba(255,255,255,0.7);
+  color: rgba(255, 255, 255, 0.7);
 }
 
 .active-machines .card-title {
@@ -710,29 +724,33 @@ body {
   min-height: var(--msg-h);
   padding: 4px 0;
 }
+
 .message-avatar {
-    width: 36px;
-    height: 36px;
-    background: #ccc;
-    border-radius: 50%;
-    margin-right: 8px;
-    flex-shrink: 0;
-    object-fit: cover;
+  width: 36px;
+  height: 36px;
+  background: #ccc;
+  border-radius: 50%;
+  margin-right: 8px;
+  flex-shrink: 0;
+  object-fit: cover;
 }
+
 .message-content strong {
-    display: block;
-    font-size: 12px;
+  display: block;
+  font-size: 12px;
 }
+
 .message-content span {
-    font-size: 11px;
-    color: #666;
+  font-size: 11px;
+  color: #666;
 }
 
 /* Unread indicator */
 .unread-dot {
   width: 9px;
   height: 9px;
-  background: #e11d48; /* red */
+  background: #e11d48;
+  /* red */
   border-radius: 50%;
   display: inline-block;
   margin-right: 6px;

@@ -2,14 +2,14 @@ import Database from 'better-sqlite3';
 import path from 'path';
 
 // Database is located in the parent directory of the web project root
-const DB_PATH = '/Users/zacharyanderson/newspartahack11/vending/vending-app/assets/vending.db';
+const DB_PATH = path.join(process.cwd(), '../vending.db');
 
 let db: Database.Database | null = null;
 
 export function getDb() {
     if (!db) {
         try {
-            console.log(`Connecting to DB at: ${DB_PATH}`);
+            console.log(`Connecting to DB at: ${DB_PATH} `);
             db = new Database(DB_PATH, { verbose: console.log });
             db.pragma('journal_mode = WAL');
         } catch (error) {
@@ -34,24 +34,24 @@ export function getDashboardStats(): DashboardStats {
 
     const machineCount = db.prepare('SELECT COUNT(*) as count FROM vending_machines').get() as { count: number };
 
-    // Calculate revenue from purchases (fixed $1.50 per purchase)
-    const purchaseCount = db.prepare('SELECT COUNT(*) as count FROM purchases').get() as { count: number };
-    const totalRevenue = purchaseCount.count * 1.50;
+    // Calculate revenue from purchases (Sum of credits_earned)
+    const revenueQuery = db.prepare('SELECT SUM(credits_earned) as total FROM purchases').get() as { total: number };
+    const totalRevenue = revenueQuery.total || 0;
 
     // Calculate revenue change from last week
     const now = new Date();
     const lastWeek = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
     const lastWeekDate = lastWeek.toISOString().split('T')[0];
-    
+
     const lastWeekPurchases = db.prepare(`
-        SELECT COUNT(*) as count FROM purchases 
+        SELECT SUM(credits_earned) as total FROM purchases 
         WHERE DATE(timestamp) < ?
         AND DATE(timestamp) >= DATE(?, '-7 days')
-    `).get(lastWeekDate, lastWeekDate) as { count: number };
-    
-    const lastWeekRevenue = lastWeekPurchases.count * 1.50;
-    const revenueChangePercent = lastWeekRevenue > 0 
-        ? ((totalRevenue - lastWeekRevenue) / lastWeekRevenue) * 100 
+    `).get(lastWeekDate, lastWeekDate) as { total: number };
+
+    const lastWeekRevenue = lastWeekPurchases.total || 0;
+    const revenueChangePercent = lastWeekRevenue > 0
+        ? ((totalRevenue - lastWeekRevenue) / lastWeekRevenue) * 100
         : 0;
 
     // Get top product by purchase count
@@ -79,7 +79,7 @@ export function getTopProducts(limit = 5): { name: string; total_sold: number; t
     const rows = db.prepare(`
         SELECT i.name as name,
                COUNT(p.purchase_id) as total_sold,
-               COUNT(p.purchase_id) * 1.50 as total_revenue
+               SUM(p.credits_earned) as total_revenue
         FROM purchases p
         JOIN items i ON p.item_id = i.item_id
         GROUP BY p.item_id
@@ -93,7 +93,7 @@ export function getRevenueSeries(days = 8): { date: string; total_revenue: numbe
     const db = getDb();
     const rows = db.prepare(`
         SELECT DATE(timestamp) as date,
-               COUNT(purchase_id) * 1.50 as total_revenue
+               SUM(credits_earned) as total_revenue
         FROM purchases
         WHERE DATE(timestamp) >= DATE('now', ?)
         GROUP BY DATE(timestamp)
