@@ -74,15 +74,39 @@ export function getDashboardStats(): DashboardStats {
 }
 
 // Return top N products by purchase count
-export function getTopProducts(limit = 5): { name: string; count: number }[] {
+export function getTopProducts(limit = 5): { name: string; total_sold: number; total_revenue: number }[] {
     const db = getDb();
     const rows = db.prepare(`
-        SELECT i.name as name, COUNT(p.purchase_id) as count
+        SELECT i.name as name,
+               COUNT(p.purchase_id) as total_sold,
+               COUNT(p.purchase_id) * 1.50 as total_revenue
         FROM purchases p
         JOIN items i ON p.item_id = i.item_id
         GROUP BY p.item_id
-        ORDER BY count DESC
+        ORDER BY total_sold DESC
         LIMIT ?
-    `).all(limit) as { name: string; count: number }[];
+    `).all(limit) as { name: string; total_sold: number; total_revenue: number }[];
     return rows;
+}
+
+export function getRevenueSeries(days = 8): { date: string; total_revenue: number }[] {
+    const db = getDb();
+    const rows = db.prepare(`
+        SELECT DATE(timestamp) as date,
+               COUNT(purchase_id) * 1.50 as total_revenue
+        FROM purchases
+        WHERE DATE(timestamp) >= DATE('now', ?)
+        GROUP BY DATE(timestamp)
+        ORDER BY DATE(timestamp) ASC
+    `).all(`-${days - 1} days`) as { date: string; total_revenue: number }[];
+
+    const map = new Map(rows.map((r) => [r.date, r.total_revenue]));
+    const series: { date: string; total_revenue: number }[] = [];
+    const now = new Date();
+    for (let i = days - 1; i >= 0; i -= 1) {
+        const d = new Date(now.getTime() - i * 24 * 60 * 60 * 1000);
+        const iso = d.toISOString().split('T')[0];
+        series.push({ date: iso, total_revenue: map.get(iso) ?? 0 });
+    }
+    return series;
 }

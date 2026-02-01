@@ -1,4 +1,4 @@
-import { getDashboardStats, getDb, getTopProducts } from '@/lib/db';
+import { getDashboardStats, getDb, getRevenueSeries, getTopProducts } from '@/lib/db';
 import TopProductsChart from './components/TopProductsChart';
 
 export const dynamic = 'force-dynamic'; // Refresh on every request
@@ -10,20 +10,115 @@ export default function Home() {
   const db = getDb();
   const machines = db.prepare('SELECT * FROM vending_machines LIMIT 5').all() as any[];
   const topProducts = getTopProducts(5);
+  const revenueSeries = getRevenueSeries(8);
+
+  const maxRevenue = Math.max(...revenueSeries.map((d) => d.total_revenue), 1);
+  const chartWidth = 520;
+  const chartHeight = 160;
+  const points = revenueSeries.map((d, i) => {
+    const x = (i / (revenueSeries.length - 1)) * chartWidth;
+    const y = chartHeight - (d.total_revenue / maxRevenue) * (chartHeight - 20) - 10;
+    return { x, y };
+  });
+
+  const linePath = points
+    .map((p, i) => `${i === 0 ? 'M' : 'L'}${p.x},${p.y}`)
+    .join(' ');
+  const areaPath = `${linePath} L${chartWidth},${chartHeight} L0,${chartHeight} Z`;
 
   return (
-    <div className="dashboard-grid">
-      {/* 1. Vending Machines List */}
-      <div className="card machine-list">
-        <div className="card-title">Vending Machines</div>
-        <div className="machines-grid">
-          {machines.map((m) => (
-            <div key={m.machine_id} className="machine-card">
-              <img src="/vending-machine.png" alt="vending" />
-              <div className="machine-name">{m.address || `Machine ${m.machine_id}`}</div>
-            </div>
-          ))}
+    <div className="page">
+      <div className="page-header">
+        <div>
+          <div className="page-title">Sales Overview</div>
+          <div className="page-subtitle">Your current sales summary and activity</div>
         </div>
+      </div>
+
+      <div className="dashboard-grid">
+        {/* Total Sales */}
+        <div className="card total-sales">
+          <div className="card-header">
+            <div className="card-title">Total Sales</div>
+          </div>
+          <div className="card-metric">${stats.totalRevenue.toFixed(2)}</div>
+          <div className="sales-chip">
+            <span className="chip-dot" />
+            {stats.revenueChangePercent >= 0 ? '+' : ''}{stats.revenueChangePercent.toFixed(1)}% vs last month
+          </div>
+        </div>
+
+        {/* Vending Machines Carousel */}
+        <div className="card machine-carousel">
+          <div className="card-header">
+            <div className="card-title">Vending Machines</div>
+          </div>
+          <div className="carousel-track">
+            {machines.map((m) => (
+              <div key={m.machine_id} className="carousel-card">
+                <img src="/vending-machine.png" alt="vending machine" className="carousel-thumb" />
+                <div className="carousel-name">{m.address || `Machine ${m.machine_id}`}</div>
+                <div className="carousel-sub">ID: {m.machine_id}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+      {/* 4. Recent Orders */}
+      <div className="card recent-orders">
+        <div className="card-header">
+          <div className="card-title">Recent order</div>
+          <button className="pill" type="button">Filter</button>
+        </div>
+        <table className="orders-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Product</th>
+              <th>Date</th>
+              <th>Status</th>
+              <th>Price</th>
+              <th>Customer</th>
+            </tr>
+          </thead>
+          <tbody>
+            {(() => {
+              const db = getDb();
+              const purchases = db.prepare(`
+                SELECT 
+                  p.purchase_id, 
+                  i.name as product_name, 
+                  p.timestamp, 
+                  'Completed' as status,
+                  1.50 as price,
+                  u.name as customer_name
+                FROM purchases p
+                JOIN items i ON p.item_id = i.item_id
+                JOIN users u ON p.user_id = u.user_id
+                ORDER BY p.timestamp DESC
+                LIMIT 5
+              `).all() as any[];
+              
+              return purchases.map((order, index) => (
+                <tr key={order.purchase_id}>
+                  <td>{index + 1}</td>
+                  <td>
+                    <div className="order-product">
+                      <div className="order-thumb" />
+                      <div className="order-name">{order.product_name}</div>
+                    </div>
+                  </td>
+                  <td>{new Date(order.timestamp).toLocaleDateString()}</td>
+                  <td>
+                    <span className="status-pill">{order.status}</span>
+                  </td>
+                  <td>${order.price.toFixed(2)}</td>
+                  <td>{order.customer_name}</td>
+                </tr>
+              ));
+            })()}
+          </tbody>
+        </table>
       </div>
 
       {/* 2. Messages / Alerts */}
@@ -62,83 +157,32 @@ export default function Home() {
         })()}
       </div>
 
-      {/* 3. Stat Cards (Split) */}
-      <div className="stat-card-1">
-        <div className="card">
-          <div className="card-title">Total Revenue</div>
-          <div style={{ fontSize: '32px', fontWeight: 'bold' }}>${stats.totalRevenue.toFixed(2)}</div>
-          <div style={{ color: stats.revenueChangePercent >= 0 ? 'green' : 'red', fontSize: '12px' }}>
-            {stats.revenueChangePercent >= 0 ? '+' : ''}{stats.revenueChangePercent.toFixed(1)}% from last week
+        {/* Top Products */}
+        <div className="card products-card">
+          <div className="card-header">
+            <div className="card-title">Products sold</div>
+            <button className="icon-btn" type="button" aria-label="More">⋯</button>
+          </div>
+          <div className="products-list">
+            {topProducts.map((p, idx) => (
+              <div key={idx} className="product-row">
+                <div className="product-thumb"></div>
+                <div className="product-info">
+                  <div className="product-name">{p.name}</div>
+                  <div className="product-meta">{p.total_sold} sold</div>
+                </div>
+                <div className="product-price">${p.total_revenue.toFixed(2)}</div>
+              </div>
+            ))}
           </div>
         </div>
-        <div className="card">
-          <div className="card-title">Active Machines</div>
-          <div style={{ fontSize: '32px', fontWeight: 'bold' }}>{stats.totalMachines}</div>
-          <div style={{ color: '#666', fontSize: '12px' }}>All systems operational</div>
-        </div>
-      </div>
-
-      {/* 4. Recent Orders */}
-      <div className="card full-width">
-        <div className="card-title">Recent Order</div>
-        <table style={{ width: '100%', textAlign: 'left', fontSize: '13px' }}>
-          <thead>
-            <tr>
-              <th>Order ID</th>
-              <th>Product</th>
-               <th>Machine</th>
-               <th>Order Time</th>
-              <th>Status</th>
-              <th>Qty</th>
-              <th>Total Price</th>
-                           <th>Credits Earned</th>
-              <th>Customer</th>
-            </tr>
-          </thead>
-          <tbody>
-            {(() => {
-              const db = getDb();
-              const purchases = db.prepare(`
-                SELECT 
-                  p.purchase_id, 
-                  i.name as product_name, 
-                                   p.machine_id,
-                  p.timestamp, 
-                  'Completed' as status,
-                  1 as qty,
-                  1.50 as price,
-                                   p.credits_earned,
-                  u.name as customer_name
-                FROM purchases p
-                JOIN items i ON p.item_id = i.item_id
-                JOIN users u ON p.user_id = u.user_id
-                ORDER BY p.timestamp DESC
-                LIMIT 5
-              `).all() as any[];
-              
-              return purchases.map((order) => (
-                <tr key={order.purchase_id} style={{ borderBottom: '1px solid #eee', height: '40px' }}>
-                  <td>{order.purchase_id}</td>
-                  <td>{order.product_name}</td>
-                                   <td>{order.machine_id}</td>
-                  <td>{new Date(order.timestamp).toLocaleString()}</td>
-                  <td><span style={{ color: 'green', fontWeight: 'bold' }}>●</span> {order.status}</td>
-                  <td>{order.qty}</td>
-                  <td>${order.price.toFixed(2)}</td>
-                                   <td>{order.credits_earned}</td>
-                  <td>{order.customer_name}</td>
-                </tr>
-              ));
-            })()}
-          </tbody>
-        </table>
-      </div>
 
       {/* Top Products Chart */}
       <div style={{ gridColumn: '1 / -1' }}>
-        <TopProductsChart data={topProducts} />
+        <TopProductsChart data={topProducts.map((p) => ({ name: p.name, count: p.total_sold }))} />
       </div>
 
+      </div>
     </div>
   );
 }
