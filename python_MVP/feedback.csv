@@ -1,0 +1,101 @@
+id,machine_id,type,content,timestamp
+1,6,request,Yerba Mate,2026-01-29 05:19
+2,5,request,Kind Bar,2026-01-26 12:19
+3,14,issue,Out of change,2026-01-27 17:19
+4,9,request,Celsius,2026-01-26 02:19
+5,2,issue,Out of change,2026-01-30 16:19
+6,9,request,Yerba Mate,2026-01-28 01:19
+7,8,request,Red Bull,2026-01-27 14:19
+8,4,request,Celsius,2026-01-30 17:19
+9,6,request,Gluten Free Cookies,2026-01-28 05:19
+10,5,request,Oatmilk Latte,2026-01-30 23:19
+11,2,request,Oatmilk Latte,2026-01-27 08:19
+12,12,issue,Out of change,2026-01-26 19:19
+13,15,request,Kind Bar,2026-01-31 01:19
+14,6,request,Oatmilk Latte,2026-01-31 10:19
+15,11,request,Red Bull,2026-01-29 18:19
+16,15,request,Gluten Free Cookies,2026-01-29 06:19
+17,9,request,Red Bull,2026-01-25 16:19
+18,9,request,Oatmilk Latte,2026-01-26 21:19
+19,11,request,Red Bull,2026-01-28 07:19
+20,3,request,Yerba Mate,2026-01-26 07:19
+21,15,request,Oatmilk Latte,2026-01-28 00:19
+22,7,issue,Scanner too high,2026-01-26 14:19
+23,15,issue,Out of change,2026-01-26 20:19
+24,10,request,Oatmilk Latte,2026-01-30 03:19
+25,10,issue,Out of change,2026-01-31 01:19
+26,12,issue,Stuck item,2026-01-26 01:19
+27,14,issue,Card reader error,2026-01-30 08:19
+28,7,issue,Scanner too high,2026-01-30 04:19
+29,2,request,Celsius,2026-01-29 06:19
+30,4,request,Kind Bar,2026-01-28 16:19
+31,10,request,Red Bull,2026-01-27 15:19
+32,1,request,Gluten Free Cookies,2026-01-29 05:19
+33,10,request,Oatmilk Latte,2026-01-25 20:19
+34,14,issue,Stuck item,2026-01-29 19:19
+35,7,request,Yerba Mate,2026-01-25 01:19
+36,2,request,Red Bull,2026-01-29 16:19
+37,4,request,Yerba Mate,2026-01-28 15:19
+38,8,request,Kind Bar,2026-01-30 16:19
+39,15,request,Kind Bar,2026-01-30 01:19
+40,14,request,Kind Bar,2026-01-27 23:19
+41,10,request,Celsius,2026-01-28 07:19
+42,6,request,Yerba Mate,2026-01-29 10:19
+43,12,request,Yerba Mate,2026-01-27 15:19
+44,8,request,Hot Cheetos,2026-01-28 20:19
+45,5,request,Yerba Mate,2026-01-28 10:19
+46,1,request,Hot Cheetos,2026-01-25 07:19
+47,12,request,Kind Bar,2026-01-30 01:19
+48,8,request,Hot Cheetos,2026-01-28 13:19
+49,9,issue,Scanner too high,2026-01-26 14:19
+50,8,issue,Card reader error,2026-01-28 15:19
+51,7,request,Hot Cheetos,2026-01-30 05:19
+52,10,issue,Out of change,2026-01-25 19:19
+53,2,issue,Card reader error,2026-01-29 01:19
+54,10,issue,Screen flickering,2026-01-29 18:19
+55,13,request,Celsius,2026-01-27 23:19
+56,3,request,Yerba Mate,2026-01-29 19:19
+57,14,issue,Screen flickering,2026-01-26 11:19
+58,10,request,Kind Bar,2026-01-29 13:19
+59,1,request,Celsius,2026-01-28 04:19
+60,14,request,Kind Bar,2026-01-30 06:19
+61,6,issue,Screen flickering,2026-01-28 07:19
+62,14,issue,Card reader error,2026-01-26 17:19
+63,11,issue,Screen flickering,2026-01-27 05:19
+64,8,request,Hot Cheetos,2026-01-31 12:19
+65,11,request,Gluten Free Cookies,2026-01-29 12:19
+66,15,issue,Screen flickering,2026-01-28 01:19
+67,14,request,Gluten Free Cookies,2026-01-30 22:19
+68,8,issue,Stuck item,2026-01-26 12:19
+69,12,request,Kind Bar,2026-01-26 10:19
+70,7,issue,Card reader error,2026-01-24 22:19
+71,11,issue,Screen flickering,2026-01-27 16:19
+72,15,request,Oatmilk Latte,2026-01-28 09:19
+73,6,issue,Out of change,2026-01-28 11:19
+74,7,issue,Card reader error,2026-01-31 18:19
+75,12,request,Celsius,2026-01-29 01:19
+76,8,request,Yerba Mate,2026-01-30 06:19
+77,3,issue,Card reader error,2026-01-27 23:19
+78,4,request,Yerba Mate,2026-01-28 15:19
+79,12,request,Yerba Mate,2026-01-30 01:19
+80,5,request,Hot Cheetos,2026-01-28 03:19
+81,6,request,Yerba Mate,2026-01-27 02:19
+82,15,issue,Scanner too high,2026-01-28 21:19
+83,3,request,Gluten Free Cookies,2026-01-28 11:19
+84,5,issue,Scanner too high,2026-01-25 10:19
+85,3,request,Yerba Mate,2026-01-30 13:19
+86,6,request,Red Bull,2026-01-29 04:19
+87,7,request,Gluten Free Cookies,2026-01-26 05:19
+88,15,request,Kind Bar,2026-01-26 15:19
+89,8,issue,Screen flickering,2026-01-30 01:19
+90,13,request,Yerba Mate,2026-01-27 19:19
+91,3,issue,Out of change,2026-01-28 07:19
+92,4,request,Red Bull,2026-01-28 16:19
+93,5,issue,Card reader error,2026-01-26 15:19
+94,14,request,Yerba Mate,2026-01-28 14:19
+95,10,request,Celsius,2026-01-29 00:19
+96,14,request,Celsius,2026-01-29 11:19
+97,8,issue,Scanner too high,2026-01-27 12:19
+98,3,request,Oatmilk Latte,2026-01-25 20:19
+99,12,request,Yerba Mate,2026-01-28 00:19
+100,2,issue,Stuck item,2026-01-29 09:19
