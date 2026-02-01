@@ -6,6 +6,24 @@ export const dynamic = 'force-dynamic'; // Refresh on every request
 export default function Home() {
   const stats = getDashboardStats();
 
+  // Map product names to image filenames
+  const getImageName = (name: string) => {
+    const map: Record<string, string> = {
+      'Pizza Slice': 'pep-pizza',
+      'Cheese Stick Crackers': 'cheese-crackers',
+      'Lunchable': 'lunchables',
+      'M&Ms': 'm-and-ms',
+      'Sushi Roll': 'sushi',
+      'Cup Noodles': 'cup-o-noodles',
+      'Mac n Cheese': 'mac-n-cheese',
+      'Soup Bowl': 'soup-bowl',
+      'Bagel Cream Cheese': 'bagel-cream-cheese',
+      'Donut': 'glazed-donut',
+      'Hard Boiled Eggs': 'hard-boiled-egg',
+    };
+    return map[name] || name.toLowerCase().replace(/\s+/g, '-').replace(/&/g, '-and-');
+  };
+
   // Fetch machines for the list
   const db = getDb();
   const machines = db.prepare('SELECT * FROM vending_machines LIMIT 10').all() as any[];
@@ -99,12 +117,14 @@ export default function Home() {
                 LIMIT 5
               `).all() as any[];
               
-              return purchases.map((order, index) => (
+              return purchases.map((order, index) => {
+                const imageName = getImageName(order.product_name);
+                return (
                 <tr key={order.purchase_id}>
                   <td>{index + 1}</td>
                   <td>
                     <div className="order-product">
-                      <div className="order-thumb" />
+                      <img src={`/${imageName}.png`} alt={order.product_name} className="order-thumb" />
                       <div className="order-name">{order.product_name}</div>
                     </div>
                   </td>
@@ -115,7 +135,7 @@ export default function Home() {
                   <td>${order.price.toFixed(2)}</td>
                   <td>{order.customer_name}</td>
                 </tr>
-              ));
+              )});
             })()}
           </tbody>
         </table>
@@ -164,16 +184,18 @@ export default function Home() {
             <button className="icon-btn" type="button" aria-label="More">⋯</button>
           </div>
           <div className="products-list">
-            {topProducts.map((p, idx) => (
+            {topProducts.map((p, idx) => {
+              const imageName = getImageName(p.name);
+              return (
               <div key={idx} className="product-row">
-                <div className="product-thumb"></div>
+                <img src={`/${imageName}.png`} alt={p.name} className="product-thumb" />
                 <div className="product-info">
                   <div className="product-name">{p.name}</div>
                   <div className="product-meta">{p.total_sold} sold</div>
                 </div>
                 <div className="product-price">${p.total_revenue.toFixed(2)}</div>
               </div>
-            ))}
+            )})}
           </div>
         </div>
 
