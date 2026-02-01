@@ -19,6 +19,7 @@ const CATEGORIES = [
 export default function HomeScreen() {
     const navigation = useNavigation<any>();
     const [machines, setMachines] = useState<any[]>([]);
+
     const [suggestions, setSuggestions] = useState<Item[]>([]);
 
     // Refs for scrolling
@@ -103,6 +104,7 @@ export default function HomeScreen() {
     const drinks = suggestions.filter(i => i.category === 'Drink');
     const snacks = suggestions.filter(i => i.category === 'Snack');
     const candy = suggestions.filter(i => i.category === 'Candy');
+    const meals = suggestions.filter(i => i.category === 'Meal');
     const healthy = suggestions.filter(i => i.category === 'Health');
     // Random mix for "Suggestions" - shuffle and take 10
     const randomSuggestions = [...suggestions].sort(() => 0.5 - Math.random()).slice(0, 10);
@@ -158,6 +160,11 @@ export default function HomeScreen() {
                             <View style={styles.imagePlaceholder}>
                                 {/* White rounded box as placeholder for machine visual */}
                                 <Image source={UI_ICONS.vendingMachine || null} style={styles.machineImage} resizeMode="contain" />
+                                {m.accessible_features !== 'Standard' && (
+                                    <View style={styles.accessBadge}>
+                                        <Ionicons name="accessibility" size={14} color={COLORS.iconBlue} />
+                                    </View>
+                                )}
                             </View>
                             <View style={styles.metaRow}>
                                 <Text style={styles.cardTitle} numberOfLines={1}>{m.address}</Text>
@@ -174,6 +181,7 @@ export default function HomeScreen() {
                 {renderItemCarousel('Drinks', drinks)}
                 {renderItemCarousel('Snacks', snacks)}
                 {renderItemCarousel('Candy', candy)}
+                {renderItemCarousel('Meals', meals)}
                 {renderItemCarousel('Healthy', healthy)}
                 {/* Note: "Meals" doesn't have a section yet in render logic above, assuming no logic for it requested, but icon exists. */}
 
@@ -281,6 +289,19 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.25,
         shadowRadius: 3.84,
         elevation: 5,
+    },
+    accessBadge: {
+        position: 'absolute',
+        top: 4,
+        right: 4,
+        width: 20,
+        height: 20,
+        borderRadius: 10,
+        borderWidth: 1,
+        borderColor: COLORS.iconBlue,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#FFF',
     },
     machineImage: {
         width: 80,

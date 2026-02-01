@@ -29,6 +29,7 @@ export default function MapScreen() {
     const [machineInventory, setMachineInventory] = useState<any[]>([]);
     const [searchText, setSearchText] = useState('');
     const [searchResults, setSearchResults] = useState<number[]>([]); // Machine IDs with item
+    const [searchItemPrice, setSearchItemPrice] = useState<number | null>(null);
 
     // Load initial machines
     useEffect(() => {
@@ -83,6 +84,18 @@ export default function MapScreen() {
             .map((row: any) => row.machine_id);
 
         setSearchResults([...new Set(matchedMachineIds)]);
+
+        // Fetch Price
+        if (matchedMachineIds.length > 0) {
+            const priceQuery = await runQuery('SELECT price FROM items WHERE name LIKE ? LIMIT 1', [`%${text}%`]);
+            if (priceQuery.length > 0) {
+                setSearchItemPrice(priceQuery[0].price);
+            } else {
+                setSearchItemPrice(null);
+            }
+        } else {
+            setSearchItemPrice(null);
+        }
     };
 
     const loadMachineInventory = async (machineId: number) => {
@@ -159,6 +172,10 @@ export default function MapScreen() {
                         onChangeText={setSearchText}
                     />
                 </View>
+
+                {searchItemPrice !== null && !selectedMachine && (
+                    <Text style={styles.priceTag}>Price: ${searchItemPrice.toFixed(2)}</Text>
+                )}
 
                 {/* Content switching based on selection */}
                 {selectedMachine ? (
@@ -322,5 +339,13 @@ const styles = StyleSheet.create({
     },
     badgeText: { color: '#8BC34A', fontSize: 12, fontWeight: 'bold' }, // Green Text
 
-    accessIcon: { position: 'absolute', top: 8, right: 8 }
+    accessIcon: { position: 'absolute', top: 8, right: 8 },
+
+    priceTag: {
+        color: '#F5A623', // Gold/Orange matching Activity screen
+        fontSize: 16,
+        fontWeight: 'bold',
+        marginBottom: SPACING.m,
+        marginLeft: SPACING.m + 8,
+    }
 });

@@ -58,7 +58,7 @@ export default function ActivityScreen() {
             <View style={styles.listDetails}>
                 <Text style={styles.listTitle}>{item.item_name}</Text>
                 <Text style={styles.listSub}>{formatDate(item.timestamp)}</Text>
-                <Text style={styles.listPrice}>$1.50</Text>
+                <Text style={styles.listPrice}>${(item.credits_earned || 0).toFixed(2)}</Text>
             </View>
             <TouchableOpacity
                 style={styles.reorderBtn}

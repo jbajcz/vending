@@ -27,7 +27,8 @@ CREATE TABLE vending_machines (
 CREATE TABLE items (
     item_id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT NOT NULL,
-    category TEXT
+    category TEXT,
+    price REAL DEFAULT 0.0
 );
 
 CREATE TABLE inventory (
