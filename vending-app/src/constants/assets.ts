@@ -24,6 +24,21 @@ export const ITEM_IMAGES: Record<string, any> = {
     'Tuna Wrap': require('../../assets/tuna-wrap.png'),
     'Chicken Caesar Salad': require('../../assets/chicken-caesar-salad.png'),
     'Garden Salad': require('../../assets/garden-salad.png'),
+    'Pasta Salad': require('../../assets/pasta-salad.png'),
+    'Sushi Roll': require('../../assets/sushi.png'),
+    'Burrito': require('../../assets/burrito.png'),
+    'Pizza Slice': require('../../assets/pep-pizza.png'),
+    'Hot Pocket': require('../../assets/hot-pocket.png'),
+    'Cup Noodles': require('../../assets/cup-o-noodles.png'),
+    'Mac n Cheese': require('../../assets/mac-n-cheese.png'),
+    'Soup Bowl': require('../../assets/soup-bowl.png'),
+    'Bagel Cream Cheese': require('../../assets/bagel-cream-cheese.png'),
+    'Croissant': require('../../assets/croissant.png'),
+    'Muffin': require('../../assets/muffin.png'),
+    'Donut': require('../../assets/glazed-donut.png'),
+    'Hard Boiled Eggs': require('../../assets/hard-boiled-egg.png'),
+    'Cheese Stick Crackers': require('../../assets/cheese-crackers.png'),
+    'Lunchable': require('../../assets/lunchables.png'),
 };
 
 export const UI_ICONS = {
