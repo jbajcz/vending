@@ -2,7 +2,7 @@ import Database from 'better-sqlite3';
 import path from 'path';
 
 // Database is located in the parent directory of the web project root
-const DB_PATH = path.resolve(process.cwd(), '../vending.db');
+const DB_PATH = '/Users/zacharyanderson/newspartahack11/vending/vending-app/assets/vending.db';
 
 let db: Database.Database | null = null;
 
