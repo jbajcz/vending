@@ -85,8 +85,7 @@ export default function Home() {
       {/* 4. Recent Orders */}
       <div className="card recent-orders">
         <div className="card-header">
-          <div className="card-title">Recent order</div>
-          <button className="pill" type="button">Filter</button>
+          <div className="card-title" style={{ marginTop: '5px' }}>Recent order</div>
         </div>
         <table className="orders-table">
           <thead>
@@ -114,7 +113,7 @@ export default function Home() {
                 JOIN items i ON p.item_id = i.item_id
                 JOIN users u ON p.user_id = u.user_id
                 ORDER BY p.timestamp DESC
-                LIMIT 5
+                LIMIT 15
               `).all() as any[];
               
               return purchases.map((order, index) => {
@@ -128,7 +127,7 @@ export default function Home() {
                       <div className="order-name">{order.product_name}</div>
                     </div>
                   </td>
-                  <td>{new Date(order.timestamp).toLocaleDateString()}</td>
+                  <td>{new Date(order.timestamp).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</td>
                   <td>
                     <span className="status-pill">{order.status}</span>
                   </td>
@@ -161,7 +160,7 @@ export default function Home() {
 
           return messages.map((m) => (
             <div key={m.id} className="message-item">
-              <div className="message-avatar"></div>
+              <img src="/vending-machine.png" alt="notification" className="message-avatar" />
               <div style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                   <div style={{ display: 'flex', alignItems: 'center' }}>
@@ -198,11 +197,6 @@ export default function Home() {
             )})}
           </div>
         </div>
-
-      {/* Top Products Chart */}
-      <div style={{ gridColumn: '1 / -1' }}>
-        <TopProductsChart data={topProducts.map((p) => ({ name: p.name, count: p.total_sold }))} />
-      </div>
 
       </div>
     </div>
