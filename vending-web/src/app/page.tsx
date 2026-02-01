@@ -8,7 +8,7 @@ export default function Home() {
 
   // Fetch machines for the list
   const db = getDb();
-  const machines = db.prepare('SELECT * FROM vending_machines LIMIT 5').all() as any[];
+  const machines = db.prepare('SELECT * FROM vending_machines LIMIT 10').all() as any[];
   const topProducts = getTopProducts(5);
   const revenueSeries = getRevenueSeries(8);
 

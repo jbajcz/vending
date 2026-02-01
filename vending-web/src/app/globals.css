@@ -334,9 +334,9 @@ body {
 .dashboard-grid {
   padding: 0;
   display: grid;
-  grid-template-columns: 170px 320px 1fr;
+  grid-template-columns: 170px 600px 1fr;
   grid-auto-rows: minmax(60px, auto);
-  column-gap: 0;
+  column-gap: 35px;
   row-gap: 6px;
   width: 100%;
   align-items: start;
@@ -493,7 +493,8 @@ body {
 
 .recent-orders {
   grid-column: 1 / 3;
-  max-width: 590px;
+  width: 100%;
+  max-width: 1000px;
   justify-self: start;
 }
 
@@ -509,7 +510,7 @@ body {
   padding: 10px 8px;
   border-bottom: 1px solid #eef2f7;
 }
-
+ 
 .orders-table th {
   font-size: 11px;
   font-weight: 600;
@@ -628,7 +629,7 @@ body {
   background: #17164b;
   color: #ffffff;
   width: 100%;
-  max-width: 320px;
+  max-width: 600px;
   min-height: 140px;
   justify-self: start;
 }
@@ -641,7 +642,7 @@ body {
 .carousel-track {
   display: grid;
   grid-auto-flow: column;
-  grid-auto-columns: calc((100% - 20px) / 2.5);
+  grid-auto-columns: calc((100% - 40px) / 4.5);
   gap: 10px;
   overflow-x: auto;
   padding-bottom: 6px;
