@@ -27,6 +27,7 @@ body {
 /* Sidebar */
 .sidebar {
   width: 72px;
+  height: 100vh;
   background-color: var(--sidebar-bg);
   color: var(--sidebar-text);
   display: flex;
@@ -35,6 +36,9 @@ body {
   flex-shrink: 0;
   align-items: center;
   border-right: 1px solid rgba(18,24,40,0.04);
+  position: sticky;
+  top: 0;
+  left: 0;
 }
 
 .brand {
@@ -50,8 +54,8 @@ body {
 .brand-icon {
   width: 40px;
   height: 40px;
-  background-color: #ddd;
   border-radius: 8px;
+  object-fit: contain;
 }
 
 .brand-text {
@@ -84,6 +88,12 @@ body {
   position: relative;
   transition: background 0.12s ease, color 0.12s ease, transform 0.08s;
   user-select: none;
+}
+
+.menu-icon {
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
 }
 
 .menu-item:hover {
@@ -497,6 +507,8 @@ body {
   width: 100%;
   max-width: 1000px;
   justify-self: start;
+  max-height: 400px;
+  overflow-y: auto;
 }
 
 .orders-table {
@@ -705,6 +717,7 @@ body {
     border-radius: 50%;
     margin-right: 8px;
     flex-shrink: 0;
+    object-fit: cover;
 }
 .message-content strong {
     display: block;
