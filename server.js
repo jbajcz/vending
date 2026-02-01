@@ -88,6 +88,26 @@ app.get('/analytics/items-sold', (req, res) => {
   });
 });
 
+// Find accessible vending machines by feature
+app.get('/machines/accessible', (req, res) => {
+  const { feature } = req.query;
+
+  if (!feature) {
+    return res.status(400).json({ error: "feature query parameter is required" });
+  }
+
+  const sql = `
+    SELECT *
+    FROM vending_machines
+    WHERE accessible_features LIKE ?;
+  `;
+
+  db.all(sql, [`%${feature}%`], (err, rows) => {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json(rows);
+  });
+});
+
 // Get all active alerts
 app.get('/alerts', (req, res) => {
   console.log("GET /alerts route loaded");
