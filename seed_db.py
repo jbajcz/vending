@@ -20,7 +20,7 @@ def run_seed():
     cursor.executescript(schema_sql)
     print("Schema initialized.")
 
-    # 2. Insert Users (50 Users)
+    # 2. Insert Users (100 Users)
     users = []
     names = ['Jack', 'Jill', 'Bob', 'Alice', 'Charlie', 'Megan', 'Tom', 'Sarah', 'Mike', 'Emily', 'David', 'Emma', 'Daniel', 'Olivia', 'James', 'Sophia', 'John', 'Isabella', 'Robert', 'Mia', 'Michael', 'Charlotte', 'William', 'Amelia', 'Mary', 'Harper']
     last_names = ['Smith', 'Johnson', 'Williams', 'Brown', 'Jones', 'Garcia', 'Miller', 'Davis', 'Rodriguez', 'Martinez', 'Hernandez', 'Lopez', 'Gonzalez', 'Wilson', 'Anderson', 'Thomas', 'Taylor', 'Moore', 'Jackson', 'Martin']
@@ -28,7 +28,7 @@ def run_seed():
     # Specific demo user
     users.append(('Jack Bajc', 'jack@example.com', 5000, 'None'))
 
-    for i in range(50):
+    for i in range(100):
         first = random.choice(names)
         last = random.choice(last_names)
         name = f"{first} {last}"
@@ -94,10 +94,10 @@ def run_seed():
     cursor.execute("SELECT user_id FROM users")
     user_ids = [row[0] for row in cursor.fetchall()]
 
-    # Generate 200 purchases over last 30 days
+    # Generate 3572 purchases over last 30 days
     start_date = datetime.now() - timedelta(days=30)
     
-    for _ in range(200):
+    for _ in range(3572):
         uid = random.choice(user_ids)
         mid = random.choice(machine_ids)
         iid = random.choice(item_ids)
