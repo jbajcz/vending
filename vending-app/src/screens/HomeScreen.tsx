@@ -9,11 +9,11 @@ import { Ionicons } from '@expo/vector-icons';
 import { ITEM_IMAGES, UI_ICONS } from '../constants/assets';
 
 const CATEGORIES = [
-    { label: 'Drinks', color: COLORS.iconGreen },
-    { label: 'Healthy', color: COLORS.iconOrange },
-    { label: 'Snacks', color: COLORS.iconWhite },
-    { label: 'Candy', color: COLORS.iconBlue },
-    { label: 'Meals', color: COLORS.iconOrange },
+    { label: 'Drinks', color: COLORS.iconGreen, icon: 'water' },
+    { label: 'Healthy', color: COLORS.iconOrange, icon: 'leaf' },
+    { label: 'Snacks', color: COLORS.iconWhite, icon: 'fast-food' },
+    { label: 'Candy', color: COLORS.iconBlue, icon: 'ice-cream' },
+    { label: 'Meals', color: COLORS.iconOrange, icon: 'restaurant' },
 ];
 
 export default function HomeScreen() {
@@ -21,19 +21,23 @@ export default function HomeScreen() {
     const [machines, setMachines] = useState<any[]>([]);
     const [suggestions, setSuggestions] = useState<Item[]>([]);
 
+    // Refs for scrolling
+    const scrollViewRef = React.useRef<ScrollView>(null);
+    const sectionPositions = React.useRef<{ [key: string]: number }>({});
+
     useEffect(() => {
         loadData();
     }, []);
 
     const loadData = async () => {
         try {
-            // Machines - Mocking distance sort by index functionality
+            // Machines
             const machineData = await runQuery('SELECT * FROM vending_machines LIMIT 20');
             setMachines(machineData.map((m, i) => ({ ...m, distance: `${(i + 1) * 0.5 + 2} mi` })));
 
-            // Suggestions
-            const items = await runQuery('SELECT * FROM items LIMIT 20');
-            setSuggestions(items);
+            // Fetch ALL items for categorization
+            const items = await runQuery('SELECT * FROM items');
+            setSuggestions(items); // Keep all in state
         } catch (e) {
             console.error(e);
         }
@@ -56,27 +60,89 @@ export default function HomeScreen() {
         }
     };
 
+    const handleCategoryPress = (label: string) => {
+        const y = sectionPositions.current[label];
+        if (y !== undefined && scrollViewRef.current) {
+            scrollViewRef.current.scrollTo({ y, animated: true });
+        }
+    };
+
+    const renderItemCarousel = (title: string, items: Item[]) => {
+        if (!items || items.length === 0) return null;
+        return (
+            <View
+                key={title}
+                onLayout={(event) => {
+                    const layout = event.nativeEvent.layout;
+                    sectionPositions.current[title] = layout.y;
+                }}
+            >
+                <Text style={styles.sectionTitle}>{title}</Text>
+                <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.horizontalScroll}>
+                    {items.map((item) => (
+                        <TouchableOpacity
+                            key={item.item_id}
+                            style={styles.machineCard} // Reuse card style for uniformity
+                            onPress={() => navigation.navigate('Map', { searchItem: item.name })}
+                        >
+                            <View style={styles.imagePlaceholder}>
+                                <Image
+                                    source={ITEM_IMAGES[item.name]}
+                                    style={styles.itemImage}
+                                    resizeMode="contain"
+                                />
+                            </View>
+                            <Text style={styles.cardTitle} numberOfLines={1}>{item.name}</Text>
+                        </TouchableOpacity>
+                    ))}
+                </ScrollView>
+            </View>
+        );
+    };
+
+    const drinks = suggestions.filter(i => i.category === 'Drink');
+    const snacks = suggestions.filter(i => i.category === 'Snack');
+    const candy = suggestions.filter(i => i.category === 'Candy');
+    const healthy = suggestions.filter(i => i.category === 'Health');
+    // Random mix for "Suggestions" - shuffle and take 10
+    const randomSuggestions = [...suggestions].sort(() => 0.5 - Math.random()).slice(0, 10);
+
     return (
-        <SafeAreaView style={styles.container}>
-            <ScrollView contentContainerStyle={styles.content}>
+        <SafeAreaView style={styles.container} edges={['right', 'top', 'left']}>
+            <ScrollView
+                ref={scrollViewRef}
+                contentContainerStyle={styles.content}
+            >
 
                 {/* Header title */}
                 <Text style={styles.headerTitle}>Vendor</Text>
 
                 {/* Search Bar */}
-                <View style={styles.searchContainer}>
-                    <Ionicons name="search" size={20} color="#666" style={styles.searchIcon} />
+                <TouchableOpacity
+                    style={styles.searchContainer}
+                    activeOpacity={0.9}
+                    onPress={() => navigation.navigate('Search')}
+                >
+                    <Ionicons name="search" size={20} color="#FFF" style={styles.searchIcon} />
                     <TextInput
                         placeholder="Search item"
-                        placeholderTextColor="#666"
+                        placeholderTextColor="#FFF"
                         style={styles.searchInput}
+                        editable={false}
+                        pointerEvents="none"
                     />
-                </View>
+                </TouchableOpacity>
 
                 {/* Categories Row */}
                 <View style={styles.categoriesRow}>
                     {CATEGORIES.map((cat, index) => (
-                        <CategoryItem key={index} color={cat.color} label={cat.label} />
+                        <CategoryItem
+                            key={index}
+                            color={cat.color}
+                            label={cat.label}
+                            icon={cat.icon}
+                            onPress={() => handleCategoryPress(cat.label)}
+                        />
                     ))}
                 </View>
 
@@ -101,37 +167,27 @@ export default function HomeScreen() {
                     ))}
                 </ScrollView>
 
-                {/* Suggestions Grid */}
-                <Text style={styles.sectionTitle}>Item Suggestions</Text>
-                <View style={styles.grid}>
-                    {suggestions.map((item) => (
-                        <TouchableOpacity
-                            key={item.item_id}
-                            style={styles.gridItem}
-                            onPress={() => navigation.navigate('Map', { searchItem: item.name })}
-                        >
-                            <View style={styles.imagePlaceholder}>
-                                <Image
-                                    source={ITEM_IMAGES[item.name]}
-                                    style={styles.itemImage}
-                                    resizeMode="contain"
-                                />
-                            </View>
-                            <Text style={styles.cardTitle}>{item.name}</Text>
-                        </TouchableOpacity>
-                    ))}
-                </View>
+                {/* Item Suggestion Carousel */}
+                {renderItemCarousel('Item Suggestions', randomSuggestions)}
 
+                {/* Category Carousels */}
+                {renderItemCarousel('Drinks', drinks)}
+                {renderItemCarousel('Snacks', snacks)}
+                {renderItemCarousel('Candy', candy)}
+                {renderItemCarousel('Healthy', healthy)}
+                {/* Note: "Meals" doesn't have a section yet in render logic above, assuming no logic for it requested, but icon exists. */}
+
+                <View style={{ height: 100 }} />
             </ScrollView>
         </SafeAreaView>
     );
 }
 
-const CategoryItem = ({ color, label }: { color: string, label: string }) => (
-    <View style={styles.categoryParam}>
-        <Ionicons name="cafe" size={28} color={color} style={{ marginBottom: 4 }} />
+const CategoryItem = ({ color, label, icon, onPress }: { color: string, label: string, icon: any, onPress: () => void }) => (
+    <TouchableOpacity style={styles.categoryParam} onPress={onPress}>
+        <Ionicons name={icon} size={28} color={color} style={{ marginBottom: 4 }} />
         <Text style={styles.categoryText}>{label}</Text>
-    </View>
+    </TouchableOpacity>
 );
 
 const styles = StyleSheet.create({
@@ -146,19 +202,27 @@ const styles = StyleSheet.create({
         marginBottom: SPACING.l,
     },
     searchContainer: {
-        backgroundColor: COLORS.inputBackground,
+        backgroundColor: '#333',
         borderRadius: RADIUS.l,
         flexDirection: 'row',
         alignItems: 'center',
         paddingHorizontal: SPACING.m,
         height: 50,
         marginBottom: SPACING.l,
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
+        elevation: 5,
     },
     searchIcon: { marginRight: 8 },
     searchInput: {
         flex: 1,
         height: '100%',
-        color: '#000',
+        color: '#FFF',
         fontSize: 16,
     },
     categoriesRow: {
@@ -169,6 +233,19 @@ const styles = StyleSheet.create({
     },
     categoryParam: {
         alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: '#333',
+        borderRadius: 10,
+        padding: 10,
+        width: 60, // Fixed width for uniformity
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
+        elevation: 5,
     },
     categoryText: {
         color: COLORS.text,
@@ -184,7 +261,7 @@ const styles = StyleSheet.create({
         marginBottom: SPACING.xl,
     },
     machineCard: {
-        width: 140,
+        width: 110,
         marginRight: SPACING.m,
     },
     imagePlaceholder: {
@@ -196,15 +273,23 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         padding: 8,
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
+        elevation: 5,
     },
     machineImage: {
-        width: '80%',
-        height: '80%',
+        width: 80,
+        height: 80,
         opacity: 0.8,
     },
     itemImage: {
-        width: '90%',
-        height: '90%',
+        width: 80,
+        height: 80,
     },
     metaRow: {
         flexDirection: 'row',

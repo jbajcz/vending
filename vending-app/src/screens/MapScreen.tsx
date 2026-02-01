@@ -108,6 +108,7 @@ export default function MapScreen() {
             setSelectedMachine(null);
         } else if (searchText) {
             setSearchText('');
+            setSearchResults([]); // Clear results
             navigation.setParams({ searchItem: null } as any);
         } else {
             navigation.goBack();
@@ -122,8 +123,7 @@ export default function MapScreen() {
                     <Ionicons name="arrow-back" size={24} color="white" />
                 </TouchableOpacity>
                 <Text style={styles.headerTitle}>
-                    {searchText ? searchText : "Coca-Cola"}
-                    {/* Hardcoding "Coca-Cola" as per screenshot default or dynamic */}
+                    Map
                 </Text>
                 <View style={{ width: 24 }} />
             </View>
@@ -150,11 +150,11 @@ export default function MapScreen() {
             <View style={styles.bottomSheet}>
                 {/* Search Bar */}
                 <View style={styles.searchBar}>
-                    <Ionicons name="search" size={20} color="#666" style={{ marginRight: 8 }} />
+                    <Ionicons name="search" size={20} color="#FFF" style={{ marginRight: 8 }} />
                     <TextInput
                         style={styles.searchInput}
-                        placeholder="Search for another item"
-                        placeholderTextColor="#999"
+                        placeholder="Search item"
+                        placeholderTextColor="#FFF"
                         value={searchText}
                         onChangeText={setSearchText}
                     />
@@ -241,7 +241,7 @@ const styles = StyleSheet.create({
         paddingBottom: 40,
     },
     searchBar: {
-        backgroundColor: '#F0F0F0', // Light Grey/White
+        backgroundColor: '#333', // Dark background
         borderRadius: 30,
         flexDirection: 'row',
         alignItems: 'center',
@@ -252,14 +252,14 @@ const styles = StyleSheet.create({
     searchInput: {
         flex: 1,
         fontSize: 16,
-        color: 'black',
+        color: 'white',
     },
 
     sheetTitle: {
         color: 'white',
-        fontSize: 18,
+        fontSize: 21,
         fontWeight: 'bold',
-        marginBottom: 4,
+        marginBottom: 2,
     },
     subTitle: {
         color: '#BBB',

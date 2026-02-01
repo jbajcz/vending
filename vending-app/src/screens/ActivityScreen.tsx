@@ -29,11 +29,25 @@ export default function ActivityScreen() {
         setPurchases(data);
     };
 
+    const formatDate = (dateString: string) => {
+        try {
+            const date = new Date(dateString.replace(' ', 'T')); // Ensure ISO format for Safari/Hermes compatibility
+            const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+            const m = months[date.getMonth()];
+            const d = date.getDate();
+            let hours = date.getHours();
+            const ampm = hours >= 12 ? 'PM' : 'AM';
+            hours = hours % 12;
+            hours = hours ? hours : 12;
+            const minutes = date.getMinutes().toString().padStart(2, '0');
+            return `${m} ${d} • ${hours}:${minutes} ${ampm}`;
+        } catch (e) {
+            return dateString;
+        }
+    };
+
     const renderItem = ({ item }: { item: Purchase }) => (
-        <TouchableOpacity
-            style={styles.listItem}
-            onPress={() => item.item_name && navigation.navigate('Map', { searchItem: item.item_name })}
-        >
+        <View style={styles.listItem}>
             <View style={styles.imageContainer}>
                 <Image
                     source={ITEM_IMAGES[item.item_name || ''] || null}
@@ -42,15 +56,21 @@ export default function ActivityScreen() {
                 />
             </View>
             <View style={styles.listDetails}>
-                <Text style={styles.listTitle}>Past Transaction</Text>
-                <Text style={styles.listSub}>{item.timestamp}</Text>
+                <Text style={styles.listTitle}>{item.item_name}</Text>
+                <Text style={styles.listSub}>{formatDate(item.timestamp)}</Text>
                 <Text style={styles.listPrice}>$1.50</Text>
             </View>
-        </TouchableOpacity>
+            <TouchableOpacity
+                style={styles.reorderBtn}
+                onPress={() => item.item_name && navigation.navigate('Main', { screen: 'Map', params: { searchItem: item.item_name } })}
+            >
+                <Text style={styles.reorderText}>Reorder</Text>
+            </TouchableOpacity>
+        </View>
     );
 
     return (
-        <SafeAreaView style={styles.container}>
+        <SafeAreaView style={styles.container} edges={['right', 'top', 'left']}>
             <View style={styles.content}>
                 <Text style={styles.headerTitle}>Activity</Text>
 
@@ -102,7 +122,7 @@ const styles = StyleSheet.create({
 
     // Rewards Card
     rewardsCard: {
-        backgroundColor: '#4A7A8C', // Slate blue from screenshot
+        backgroundColor: '#0D3B66', // Darker Blue
         borderRadius: 20,
         padding: SPACING.l,
         marginBottom: SPACING.xl,
@@ -142,7 +162,7 @@ const styles = StyleSheet.create({
         borderRadius: 20,
     },
     earnMoreText: {
-        color: '#4A7A8C',
+        color: '#0D3B66',
         fontWeight: 'bold',
         fontSize: 12,
     },
@@ -197,5 +217,16 @@ const styles = StyleSheet.create({
     divider: {
         height: 1,
         backgroundColor: '#444',
-    }
+    },
+    reorderBtn: {
+        backgroundColor: '#333',
+        paddingVertical: 8,
+        paddingHorizontal: 16,
+        borderRadius: 20,
+    },
+    reorderText: {
+        color: '#FFF',
+        fontWeight: '600',
+        fontSize: 14,
+    },
 });

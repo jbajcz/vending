@@ -40,12 +40,37 @@ def run_seed():
     print(f"Inserted {len(users)} users.")
 
     # 3. Insert Items
+    # 3. Insert Items
     items = [
-        ('Cheez-its', 'Snack'), ('Coca-Cola', 'Drink'), ('Doritos', 'Snack'), ('Snickers', 'Candy'),
-        ('Dasani Water', 'Drink'), ('Pepsi', 'Drink'), ('Granola Bar', 'Health'), ('Sprite', 'Drink'),
-        ('M&Ms', 'Candy'), ('Oreos', 'Snack'), ('Gatorade', 'Drink'), ('Trail Mix', 'Health'),
-        ('Reeses', 'Candy'), ('Dr Pepper', 'Drink'), ('Pretzels', 'Snack'), ('Red Bull', 'Drink'),
-        ('Vitamin Water', 'Drink'), ('Apple', 'Health'), ('Banana', 'Health'), ('Protein Bar', 'Health')
+        # Drinks
+        ('Coca-Cola', 'Drink'), ('Diet Coke', 'Drink'), ('Sprite', 'Drink'), ('Dr Pepper', 'Drink'), ('Pepsi', 'Drink'),
+        ('Mountain Dew', 'Drink'), ('Fanta Orange', 'Drink'), ('Fanta Grape', 'Drink'), ('Root Beer', 'Drink'), ('Ginger Ale', 'Drink'),
+        ('Iced Tea', 'Drink'), ('Lemonade', 'Drink'), ('Dasani Water', 'Drink'), ('Smartwater', 'Drink'), ('Vitamin Water', 'Drink'),
+        ('Gatorade Blue', 'Drink'), ('Gatorade Red', 'Drink'), ('Red Bull', 'Drink'), ('Monster Energy', 'Drink'), ('Cold Coffee', 'Drink'),
+        
+        # Snacks
+        ('Doritos', 'Snack'), ('Cheetos', 'Snack'), ('Lays Classic', 'Snack'), ('Lays BBQ', 'Snack'), ('Ruffles', 'Snack'),
+        ('Pringles', 'Snack'), ('Fritos', 'Snack'), ('Goldfish', 'Snack'), ('Cheez-its', 'Snack'), ('Pretzels', 'Snack'),
+        ('Popcorn', 'Snack'), ('Beef Jerky', 'Snack'), ('Slim Jim', 'Snack'), ('Pork Rinds', 'Snack'), ('Onion Rings', 'Snack'),
+        ('Bugles', 'Snack'), ('Sun Chips', 'Snack'), ('Ritz Crackers', 'Snack'), ('Wheat Thins', 'Snack'), ('Cheese Puffs', 'Snack'),
+        
+        # Candy
+        ('Snickers', 'Candy'), ('M&Ms', 'Candy'), ('Peanut M&Ms', 'Candy'), ('KitKat', 'Candy'), ('Twix', 'Candy'),
+        ('Reeses', 'Candy'), ('Hershey Bar', 'Candy'), ('Milky Way', 'Candy'), ('3 Musketeers', 'Candy'), ('Butterfinger', 'Candy'),
+        ('Skittles', 'Candy'), ('Starburst', 'Candy'), ('Sour Patch Kids', 'Candy'), ('Gummy Bears', 'Candy'), ('Swedish Fish', 'Candy'),
+        ('Nerds', 'Candy'), ('Smarties', 'Candy'), ('Jolly Ranchers', 'Candy'), ('Altoids', 'Candy'), ('Tic Tacs', 'Candy'),
+        
+        # Health
+        ('Granola Bar', 'Health'), ('Protein Bar', 'Health'), ('Apple', 'Health'), ('Banana', 'Health'), ('Orange', 'Health'),
+        ('Grapes', 'Health'), ('Yogurt', 'Health'), ('Hummus Chips', 'Health'), ('Trail Mix', 'Health'), ('Almonds', 'Health'),
+        ('Cashews', 'Health'), ('Peanuts', 'Health'), ('Pistachios', 'Health'), ('Fruit Cup', 'Health'), ('Veggie Straws', 'Health'),
+        ('Rice Cakes', 'Health'), ('Seaweed Snacks', 'Health'), ('Dried Mango', 'Health'), ('Raisins', 'Health'), ('Apple Sauce', 'Health'),
+        
+        # Meals
+        ('Ham Sandwich', 'Meal'), ('Turkey Sandwich', 'Meal'), ('Tuna Wrap', 'Meal'), ('Chicken Caesar Salad', 'Meal'), ('Garden Salad', 'Meal'),
+        ('Pasta Salad', 'Meal'), ('Sushi Roll', 'Meal'), ('Burrito', 'Meal'), ('Pizza Slice', 'Meal'), ('Hot Pocket', 'Meal'),
+        ('Cup Noodles', 'Meal'), ('Mac n Cheese', 'Meal'), ('Soup Bowl', 'Meal'), ('Bagel Cream Cheese', 'Meal'), ('Croissant', 'Meal'),
+        ('Muffin', 'Meal'), ('Donut', 'Meal'), ('Hard Boiled Eggs', 'Meal'), ('Cheese Stick Crackers', 'Meal'), ('Lunchable', 'Meal')
     ]
     cursor.executemany("INSERT INTO items (name, category) VALUES (?, ?)", items)
     cursor.execute("SELECT item_id, name FROM items")
