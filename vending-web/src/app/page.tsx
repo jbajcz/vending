@@ -1,4 +1,5 @@
-import { getDashboardStats, getDb } from '@/lib/db';
+import { getDashboardStats, getDb, getTopProducts } from '@/lib/db';
+import TopProductsChart from './components/TopProductsChart';
 
 export const dynamic = 'force-dynamic'; // Refresh on every request
 
@@ -8,6 +9,7 @@ export default function Home() {
   // Fetch machines for the list
   const db = getDb();
   const machines = db.prepare('SELECT * FROM vending_machines LIMIT 5').all() as any[];
+  const topProducts = getTopProducts(5);
 
   return (
     <div className="dashboard-grid">
@@ -68,7 +70,9 @@ export default function Home() {
         <div className="card">
           <div className="card-title">Total Revenue</div>
           <div style={{ fontSize: '32px', fontWeight: 'bold' }}>${stats.totalRevenue.toFixed(2)}</div>
-          <div style={{ color: 'green', fontSize: '12px' }}>+12% from last week</div>
+          <div style={{ color: stats.revenueChangePercent >= 0 ? 'green' : 'red', fontSize: '12px' }}>
+            {stats.revenueChangePercent >= 0 ? '+' : ''}{stats.revenueChangePercent.toFixed(1)}% from last week
+          </div>
         </div>
         <div className="card">
           <div className="card-title">Active Machines</div>
@@ -85,10 +89,12 @@ export default function Home() {
             <tr>
               <th>Order ID</th>
               <th>Product</th>
-              <th>Order Time</th>
+               <th>Machine</th>
+               <th>Order Time</th>
               <th>Status</th>
               <th>Qty</th>
               <th>Total Price</th>
+                           <th>Credits Earned</th>
               <th>Customer</th>
             </tr>
           </thead>
@@ -99,14 +105,17 @@ export default function Home() {
                 SELECT 
                   p.purchase_id, 
                   i.name as product_name, 
+                                   p.machine_id,
                   p.timestamp, 
                   'Completed' as status,
                   1 as qty,
                   1.50 as price,
+                                   p.credits_earned,
                   u.name as customer_name
                 FROM purchases p
                 JOIN items i ON p.item_id = i.item_id
                 JOIN users u ON p.user_id = u.user_id
+                ORDER BY p.timestamp DESC
                 LIMIT 5
               `).all() as any[];
               
@@ -114,16 +123,23 @@ export default function Home() {
                 <tr key={order.purchase_id} style={{ borderBottom: '1px solid #eee', height: '40px' }}>
                   <td>{order.purchase_id}</td>
                   <td>{order.product_name}</td>
-                  <td>{order.timestamp}</td>
+                                   <td>{order.machine_id}</td>
+                  <td>{new Date(order.timestamp).toLocaleString()}</td>
                   <td><span style={{ color: 'green', fontWeight: 'bold' }}>●</span> {order.status}</td>
                   <td>{order.qty}</td>
                   <td>${order.price.toFixed(2)}</td>
+                                   <td>{order.credits_earned}</td>
                   <td>{order.customer_name}</td>
                 </tr>
               ));
             })()}
           </tbody>
         </table>
+      </div>
+
+      {/* Top Products Chart */}
+      <div style={{ gridColumn: '1 / -1' }}>
+        <TopProductsChart data={topProducts} />
       </div>
 
     </div>
