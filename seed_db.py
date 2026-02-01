@@ -70,10 +70,17 @@ def run_seed():
     item_map = {row[1]: row[0] for row in rows} # name -> id
     price_map = {row[0]: row[2] for row in rows} # id -> price
 
-    # 4. Insert Machines (50 Machines around a center point)
+    # 4. Insert Machines (50 Machines around MSU Campus)
     machines = []
-    base_lat, base_lng = 40.7128, -74.0060
-    buildings = ['Abbot Hall', 'Mason Hall', 'STEM Building', 'Library', 'Gym', 'Student Center', 'Dorm A', 'Dorm B', 'Engineering Lab', 'Design Studio', 'Cafeteria', 'Admin Block', 'North Garage', 'South Garage', 'East Wing', 'West Wing']
+    base_lat, base_lng = 42.7233, -84.4812 # East Lansing, MI
+    buildings = [
+        'MSU Union', 'Main Library', 'Wells Hall', 'International Center', 'Breslin Center', 'Spartan Stadium', 
+        'IM Sports West', 'Chemistry Building', 'Biomedical Physical Sciences', 'Brody Hall', 'Case Hall', 
+        'Wonders Hall', 'Holden Hall', 'Wilson Hall', 'Akers Hall', 'Hubbard Hall', 'Holmes Hall', 
+        'McDonel Hall', 'Shaw Hall', 'Snyder-Phillips Hall', 'Mason Hall', 'Abbot Hall', 'Williams Hall', 
+        'Campbell Hall', 'Landon Hall', 'Yakeley Hall', 'Gilchrist Hall', 'Owen Hall', 'Van Hoosen Hall', 
+        'Wharton Center', 'Kellogg Center', 'Engineering Building', 'Business College', 'Communication Arts'
+    ]
     features = ['Standard', 'Ramp access', 'Voice guidance', 'Braille keypad', 'Elevator']
 
     for i in range(50):

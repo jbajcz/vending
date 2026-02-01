@@ -155,7 +155,7 @@ export default function HomeScreen() {
                         <TouchableOpacity
                             key={m.machine_id}
                             style={styles.machineCard}
-                            onPress={() => handleDirections(m)}
+                            onPress={() => navigation.navigate('Map', { selectedMachineId: m.machine_id })}
                         >
                             <View style={styles.imagePlaceholder}>
                                 {/* White rounded box as placeholder for machine visual */}

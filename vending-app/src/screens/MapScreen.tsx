@@ -10,10 +10,10 @@ import { UI_ICONS, ITEM_IMAGES } from '../constants/assets';
 import { Ionicons } from '@expo/vector-icons';
 
 const DEFAULT_REGION = {
-    latitude: 40.7128,
-    longitude: -74.0060,
-    latitudeDelta: 0.015,
-    longitudeDelta: 0.015,
+    latitude: 42.7233,
+    longitude: -84.4812,
+    latitudeDelta: 0.02,
+    longitudeDelta: 0.02,
 };
 
 // Helper to normalize text
@@ -45,6 +45,17 @@ export default function MapScreen() {
             }
         }, [route.params?.searchItem])
     );
+
+    // Handle Deep Link to Specific Machine (e.g. from Home)
+    useEffect(() => {
+        if (route.params?.selectedMachineId && machines.length > 0) {
+            const target = machines.find(m => m.machine_id === route.params.selectedMachineId);
+            if (target) {
+                setSelectedMachine(target);
+                // Optional: Center map on it?
+            }
+        }
+    }, [route.params?.selectedMachineId, machines]);
 
     // Search Logic
     useEffect(() => {
@@ -119,12 +130,30 @@ export default function MapScreen() {
     const handleBack = () => {
         if (selectedMachine) {
             setSelectedMachine(null);
+            navigation.setParams({ selectedMachineId: null } as any); // Clear param
         } else if (searchText) {
             setSearchText('');
             setSearchResults([]); // Clear results
             navigation.setParams({ searchItem: null } as any);
         } else {
             navigation.goBack();
+        }
+    };
+
+    const handleDirections = (machine: VendingMachine) => {
+        const scheme = Platform.select({ ios: 'maps:0,0?q=', android: 'geo:0,0?q=' });
+        const latLng = `${machine.location_lat},${machine.location_lng}`;
+        const label = machine.address;
+        const url = Platform.select({
+            ios: `${scheme}${label}@${latLng}`,
+            android: `${scheme}${latLng}(${label})`
+        });
+
+        if (url) {
+            Linking.openURL(url).catch(err => {
+                console.error("Error opening maps", err);
+                Alert.alert("Error", "Could not open maps application.");
+            });
         }
     };
 
@@ -152,9 +181,15 @@ export default function MapScreen() {
                         <Marker
                             key={m.machine_id}
                             coordinate={{ latitude: m.location_lat, longitude: m.location_lng }}
-                            image={getPinIcon(m.machine_id)}
+                            zIndex={Math.floor((90 - m.location_lat) * 10000)} // South pins (closer to bottom) have higher Z index
                             onPress={() => setSelectedMachine(m)}
-                        />
+                        >
+                            <Image
+                                source={getPinIcon(m.machine_id)}
+                                style={{ width: 40, height: 40 }}
+                                resizeMode="contain"
+                            />
+                        </Marker>
                     ))}
                 </MapView>
             </View>
@@ -169,7 +204,10 @@ export default function MapScreen() {
                         placeholder="Search item"
                         placeholderTextColor="#FFF"
                         value={searchText}
-                        onChangeText={setSearchText}
+                        onChangeText={(text) => {
+                            setSearchText(text);
+                            if (selectedMachine) setSelectedMachine(null);
+                        }}
                     />
                 </View>
 
@@ -180,12 +218,25 @@ export default function MapScreen() {
                 {/* Content switching based on selection */}
                 {selectedMachine ? (
                     <View>
-                        <Text style={styles.sheetTitle}>{selectedMachine.address}</Text>
+                        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: SPACING.m }}>
+                            <Text style={styles.sheetTitle}>{selectedMachine.address}</Text>
+                            <TouchableOpacity style={styles.directionsButton} onPress={() => handleDirections(selectedMachine)}>
+                                <Ionicons name="navigate" size={16} color="white" style={{ marginRight: 4 }} />
+                                <Text style={styles.directionsText}>Directions</Text>
+                            </TouchableOpacity>
+                        </View>
                         <Text style={styles.subTitle}>Other items in stock</Text>
 
                         <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.list}>
                             {machineInventory.map((item, i) => (
-                                <View key={i} style={styles.inventoryCard}>
+                                <TouchableOpacity
+                                    key={i}
+                                    style={styles.inventoryCard}
+                                    onPress={() => {
+                                        setSearchText(item.name);
+                                        setSelectedMachine(null);
+                                    }}
+                                >
                                     <View style={styles.imagePlaceholder}>
                                         <Image source={ITEM_IMAGES[item.name]} style={styles.itemImage} resizeMode="contain" />
                                         {/* Badge as Black Circle with Number */}
@@ -194,7 +245,7 @@ export default function MapScreen() {
                                         </View>
                                     </View>
                                     <Text style={styles.cardLabel}>{item.name}</Text>
-                                </View>
+                                </TouchableOpacity>
                             ))}
                         </ScrollView>
                     </View>
@@ -347,5 +398,19 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         marginBottom: SPACING.m,
         marginLeft: SPACING.m + 8,
+    },
+
+    directionsButton: {
+        flexDirection: 'row',
+        backgroundColor: COLORS.primary, // Default blue/primary
+        paddingVertical: 8,
+        paddingHorizontal: 12,
+        borderRadius: 20,
+        alignItems: 'center',
+    },
+    directionsText: {
+        color: 'white',
+        fontWeight: 'bold',
+        fontSize: 12,
     }
 });

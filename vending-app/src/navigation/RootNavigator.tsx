@@ -9,6 +9,7 @@ import MapScreen from '../screens/MapScreen';
 import ActivityScreen from '../screens/ActivityScreen';
 import AccountScreen from '../screens/AccountScreen';
 import SearchScreen from '../screens/SearchScreen';
+import SurveyScreen from '../screens/SurveyScreen';
 import { COLORS } from '../constants/theme';
 
 const Tab = createBottomTabNavigator();
@@ -66,6 +67,11 @@ export default function RootNavigator() {
                     name="Search"
                     component={SearchScreen}
                     options={{ animation: 'fade' }}
+                />
+                <Stack.Screen
+                    name="Survey"
+                    component={SurveyScreen}
+                    options={{ title: 'Survey', headerShown: false }}
                 />
             </Stack.Navigator>
         </NavigationContainer>

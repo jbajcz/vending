@@ -88,7 +88,7 @@ export default function ActivityScreen() {
                                     <Text style={styles.rewardsFooterText}>
                                         Earn more by letting us know your favorite items!
                                     </Text>
-                                    <TouchableOpacity style={styles.earnMoreBtn}>
+                                    <TouchableOpacity style={styles.earnMoreBtn} onPress={() => navigation.navigate('Survey')}>
                                         <Text style={styles.earnMoreText}>Earn More!</Text>
                                     </TouchableOpacity>
                                 </View>
