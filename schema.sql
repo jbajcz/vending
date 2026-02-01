@@ -72,3 +72,13 @@ CREATE TABLE problem_reports (
     FOREIGN KEY (user_id) REFERENCES users(user_id),
     FOREIGN KEY (machine_id) REFERENCES vending_machines(machine_id)
 );
+
+CREATE TABLE IF NOT EXISTS alerts (
+    alert_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    machine_id INTEGER NOT NULL,
+    type TEXT NOT NULL,
+    message TEXT NOT NULL,
+    created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+    resolved INTEGER DEFAULT 0,
+    FOREIGN KEY (machine_id) REFERENCES vending_machines(machine_id)
+);
