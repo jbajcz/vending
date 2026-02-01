@@ -1,12 +1,20 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TextInput, Image, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TextInput, Image, TouchableOpacity, Linking, Platform, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { COLORS, SPACING, RADIUS } from '../constants/theme';
 import { runQuery } from '../services/db';
-import { Item, User } from '../types';
+import { Item, User, VendingMachine } from '../types';
 import { Ionicons } from '@expo/vector-icons';
 import { ITEM_IMAGES, UI_ICONS } from '../constants/assets';
+
+const CATEGORIES = [
+    { label: 'Drinks', color: COLORS.iconGreen },
+    { label: 'Healthy', color: COLORS.iconOrange },
+    { label: 'Snacks', color: COLORS.iconWhite },
+    { label: 'Candy', color: COLORS.iconBlue },
+    { label: 'Meals', color: COLORS.iconOrange },
+];
 
 export default function HomeScreen() {
     const navigation = useNavigation<any>();
@@ -19,7 +27,7 @@ export default function HomeScreen() {
 
     const loadData = async () => {
         try {
-            // Machines
+            // Machines - Mocking distance sort by index functionality
             const machineData = await runQuery('SELECT * FROM vending_machines LIMIT 20');
             setMachines(machineData.map((m, i) => ({ ...m, distance: `${(i + 1) * 0.5 + 2} mi` })));
 
@@ -28,6 +36,23 @@ export default function HomeScreen() {
             setSuggestions(items);
         } catch (e) {
             console.error(e);
+        }
+    };
+
+    const handleDirections = (machine: VendingMachine) => {
+        const scheme = Platform.select({ ios: 'maps:0,0?q=', android: 'geo:0,0?q=' });
+        const latLng = `${machine.location_lat},${machine.location_lng}`;
+        const label = machine.address;
+        const url = Platform.select({
+            ios: `${scheme}${label}@${latLng}`,
+            android: `${scheme}${latLng}(${label})`
+        });
+
+        if (url) {
+            Linking.openURL(url).catch(err => {
+                console.error("Error opening maps", err);
+                Alert.alert("Error", "Could not open maps application.");
+            });
         }
     };
 
@@ -50,18 +75,20 @@ export default function HomeScreen() {
 
                 {/* Categories Row */}
                 <View style={styles.categoriesRow}>
-                    <CategoryItem color={COLORS.iconGreen} label="Drinks" />
-                    <CategoryItem color={COLORS.iconOrange} label="Drinks" />
-                    <CategoryItem color={COLORS.iconWhite} label="Drinks" />
-                    <CategoryItem color={COLORS.iconBlue} label="Drinks" />
-                    <CategoryItem color={COLORS.iconOrange} label="Drinks" />
+                    {CATEGORIES.map((cat, index) => (
+                        <CategoryItem key={index} color={cat.color} label={cat.label} />
+                    ))}
                 </View>
 
                 {/* Near You */}
                 <Text style={styles.sectionTitle}>Vending Machines Near You</Text>
                 <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.horizontalScroll}>
                     {machines.map((m) => (
-                        <View key={m.machine_id} style={styles.machineCard}>
+                        <TouchableOpacity
+                            key={m.machine_id}
+                            style={styles.machineCard}
+                            onPress={() => handleDirections(m)}
+                        >
                             <View style={styles.imagePlaceholder}>
                                 {/* White rounded box as placeholder for machine visual */}
                                 <Image source={UI_ICONS.vendingMachine || null} style={styles.machineImage} resizeMode="contain" />
@@ -70,7 +97,7 @@ export default function HomeScreen() {
                                 <Text style={styles.cardTitle} numberOfLines={1}>{m.address}</Text>
                                 <Text style={styles.distanceText}>{m.distance}</Text>
                             </View>
-                        </View>
+                        </TouchableOpacity>
                     ))}
                 </ScrollView>
 
@@ -191,7 +218,7 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     distanceText: {
-        color: COLORS.accent, // Yellow
+        color: COLORS.accent, // Yellow from theme
         fontSize: 12,
         fontWeight: 'bold',
     },

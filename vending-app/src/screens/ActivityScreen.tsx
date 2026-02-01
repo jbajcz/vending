@@ -30,105 +30,172 @@ export default function ActivityScreen() {
     };
 
     const renderItem = ({ item }: { item: Purchase }) => (
-        <View style={styles.listItem}>
-            <Image
-                source={ITEM_IMAGES[item.item_name || ''] || null}
-                style={styles.listIcon}
-                resizeMode="contain"
-            />
+        <TouchableOpacity
+            style={styles.listItem}
+            onPress={() => item.item_name && navigation.navigate('Map', { searchItem: item.item_name })}
+        >
+            <View style={styles.imageContainer}>
+                <Image
+                    source={ITEM_IMAGES[item.item_name || ''] || null}
+                    style={styles.listIcon}
+                    resizeMode="contain"
+                />
+            </View>
             <View style={styles.listDetails}>
                 <Text style={styles.listTitle}>Past Transaction</Text>
-                <Text style={styles.listSub}>{item.timestamp} • {item.item_name}</Text>
+                <Text style={styles.listSub}>{item.timestamp}</Text>
                 <Text style={styles.listPrice}>$1.50</Text>
             </View>
-            <TouchableOpacity
-                style={styles.reorderButton}
-                onPress={() => item.item_name && navigation.navigate('Map', { searchItem: item.item_name })}
-            >
-                <Text style={styles.reorderText}>Reorder</Text>
-            </TouchableOpacity>
-        </View>
+        </TouchableOpacity>
     );
 
     return (
         <SafeAreaView style={styles.container}>
-            {/* Header */}
-            <View style={styles.header}>
+            <View style={styles.content}>
                 <Text style={styles.headerTitle}>Activity</Text>
-                <View style={styles.rewardsContainer}>
-                    <Text style={styles.rewardsText}>Rewards</Text>
-                    <Ionicons name="star" size={16} color="black" />
-                </View>
-            </View>
 
-            <FlatList
-                data={purchases}
-                ListHeaderComponent={() => (
-                    <View style={styles.featuredCard}>
-                        <View style={styles.featuredPlaceholder} />
-                        <Text style={styles.featuredTitle}>What the Past Transaction Is</Text>
-                        <Text style={styles.featuredSub}>Date • time{'\n'}Price</Text>
-                        <TouchableOpacity style={styles.reorderButtonSmall}>
-                            <Text style={styles.reorderText}>Reorder</Text>
-                        </TouchableOpacity>
-                    </View>
-                )}
-                keyExtractor={item => item.purchase_id.toString()}
-                renderItem={renderItem}
-                contentContainerStyle={styles.listContent}
-                showsVerticalScrollIndicator={false}
-            />
+                <FlatList
+                    data={purchases}
+                    ListHeaderComponent={() => (
+                        <View>
+                            {/* Rewards Card */}
+                            <View style={styles.rewardsCard}>
+                                <Ionicons name="information-circle-outline" size={24} color="white" style={styles.infoIcon} />
+                                <Text style={styles.rewardsAmount}>$29.50</Text>
+                                <Text style={styles.rewardsLabel}>Rewards Cash</Text>
+
+                                <View style={styles.rewardsFooter}>
+                                    <Text style={styles.rewardsFooterText}>
+                                        Earn more by letting us know your favorite items!
+                                    </Text>
+                                    <TouchableOpacity style={styles.earnMoreBtn}>
+                                        <Text style={styles.earnMoreText}>Earn More!</Text>
+                                    </TouchableOpacity>
+                                </View>
+                            </View>
+
+                            <Text style={styles.sectionTitle}>Transaction History</Text>
+                        </View>
+                    )}
+                    keyExtractor={item => item.purchase_id.toString()}
+                    renderItem={renderItem}
+                    contentContainerStyle={styles.listContent}
+                    showsVerticalScrollIndicator={false}
+                    ItemSeparatorComponent={() => <View style={styles.divider} />}
+                />
+            </View>
         </SafeAreaView>
     );
 }
 
 const styles = StyleSheet.create({
-    container: { flex: 1, backgroundColor: COLORS.card },
-    header: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        paddingHorizontal: SPACING.m,
-        paddingVertical: SPACING.l
+    container: { flex: 1, backgroundColor: COLORS.background },
+    content: { flex: 1, paddingHorizontal: SPACING.m },
+
+    headerTitle: {
+        fontSize: 32,
+        fontWeight: 'bold',
+        color: COLORS.text,
+        textAlign: 'center',
+        marginVertical: SPACING.m,
     },
-    headerTitle: { fontSize: 32, fontWeight: 'bold', color: 'black' },
-    rewardsContainer: { flexDirection: 'row', alignItems: 'center' },
-    rewardsText: { fontSize: 16, fontWeight: 'bold', marginRight: 4 },
 
-    listContent: { paddingHorizontal: SPACING.m, paddingBottom: 100 },
-
-    featuredCard: {
-        backgroundColor: '#D9D9D9',
+    // Rewards Card
+    rewardsCard: {
+        backgroundColor: '#4A7A8C', // Slate blue from screenshot
         borderRadius: 20,
-        padding: SPACING.m,
-        marginBottom: SPACING.l,
-        minHeight: 180,
-        justifyContent: 'flex-end',
+        padding: SPACING.l,
+        marginBottom: SPACING.xl,
+        position: 'relative',
     },
-    featuredPlaceholder: {
-        position: 'absolute', top: 10, left: 10, right: 10, height: 80, backgroundColor: 'white', borderRadius: 10
+    infoIcon: {
+        position: 'absolute',
+        top: SPACING.m,
+        right: SPACING.m,
     },
-    featuredTitle: { fontSize: 16, fontWeight: 'bold', marginTop: 80 },
-    featuredSub: { fontSize: 14, marginBottom: 8 },
-    reorderButtonSmall: {
-        backgroundColor: 'white', paddingHorizontal: 12, paddingVertical: 6, borderRadius: 12, alignSelf: 'flex-start'
+    rewardsAmount: {
+        fontSize: 48,
+        fontWeight: 'bold',
+        color: 'white',
+        marginBottom: 4,
+    },
+    rewardsLabel: {
+        fontSize: 18,
+        color: 'white',
+        marginBottom: SPACING.xl,
+    },
+    rewardsFooter: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+    },
+    rewardsFooterText: {
+        flex: 1,
+        color: '#E0E0E0', // Light grey
+        fontSize: 12,
+        marginRight: SPACING.m,
+    },
+    earnMoreBtn: {
+        backgroundColor: 'white',
+        paddingVertical: 8,
+        paddingHorizontal: 12,
+        borderRadius: 20,
+    },
+    earnMoreText: {
+        color: '#4A7A8C',
+        fontWeight: 'bold',
+        fontSize: 12,
     },
 
+    sectionTitle: {
+        fontSize: 20,
+        fontWeight: 'bold',
+        color: COLORS.text,
+        marginBottom: SPACING.m,
+    },
+
+    // List Item
+    listContent: {
+        paddingBottom: 100,
+    },
     listItem: {
         flexDirection: 'row',
         alignItems: 'center',
-        marginBottom: SPACING.l,
+        paddingVertical: SPACING.m,
+    },
+    imageContainer: {
+        width: 60,
+        height: 60,
+        backgroundColor: 'white',
+        borderRadius: 10,
+        marginRight: SPACING.m,
+        justifyContent: 'center',
+        alignItems: 'center',
     },
     listIcon: {
-        width: 60, height: 60, borderWidth: 1, borderColor: '#eee', marginRight: SPACING.m, borderRadius: 8, backgroundColor: 'white'
+        width: '80%',
+        height: '80%',
     },
-    listDetails: { flex: 1 },
-    listTitle: { fontWeight: 'bold', fontSize: 16 },
-    listSub: { color: '#666', fontSize: 12 },
-    listPrice: { fontWeight: 'bold', fontSize: 14 },
-
-    reorderButton: {
-        backgroundColor: '#888', paddingHorizontal: 16, paddingVertical: 8, borderRadius: 16
+    listDetails: {
+        flex: 1,
     },
-    reorderText: { fontWeight: 'bold', fontSize: 12, color: 'black' }
+    listTitle: {
+        fontSize: 16,
+        color: 'white',
+        marginBottom: 4,
+    },
+    listSub: {
+        fontSize: 12,
+        color: '#CCC',
+        marginBottom: 4,
+    },
+    listPrice: {
+        fontSize: 16,
+        fontWeight: 'bold',
+        color: '#F5A623', // Gold/Orange
+    },
+    divider: {
+        height: 1,
+        backgroundColor: '#444',
+    }
 });
